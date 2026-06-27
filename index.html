@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cape City">
+<meta name="description" content="Cape City — an idle superhero game. Fight crime, recruit a team, master powers, defeat villains, and become a legend.">
+<title>Cape City — Idle Hero</title>
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --ink:#0a0e1a; --surface:#111a30; --surface2:#0d1424; --raised:#172340;
+  --line:#26334f; --line2:#1b2640;
+  --text:#eaf0ff; --muted:#90a2c6; --dim:#5e6f93;
+  --blue:#4cc2ff; --blue2:#2b6fff; --gold:#ffc83d; --gold2:#ff9d12;
+  --red:#ff4d5e; --aqua:#46e5b7; --violet:#9b6bff;
+  --rank:#8ea3c8;
+  --display:'Bangers', system-ui, sans-serif;
+  --body:'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --r:16px; --hud-h:84px; --tab-h:64px;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;overflow:hidden;background:var(--ink);color:var(--text);font-family:var(--body);overscroll-behavior:none}
+body{position:fixed;inset:0;width:100%;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+#app{position:absolute;inset:0;display:flex;flex-direction:column}
+button{font-family:inherit;color:inherit;border:none;background:none;cursor:pointer}
+.tnum{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
+/* ---------- atmosphere ---------- */
+.sky{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+   radial-gradient(120% 80% at 50% -10%, #1a2banner 0%, transparent 60%),
+   radial-gradient(90% 55% at 80% 0%, rgba(43,111,255,.16), transparent 60%),
+   radial-gradient(90% 55% at 15% 5%, rgba(155,107,255,.12), transparent 55%),
+   linear-gradient(180deg,#0c1428 0%, #0a0e1a 60%, #080b14 100%);}
+.halftone{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(255,255,255,.045) 1px, transparent 1.4px);
+  background-size:13px 13px; mask-image:linear-gradient(180deg,#000,transparent 70%);
+  -webkit-mask-image:linear-gradient(180deg,#000,transparent 70%);}
+.stars{position:absolute;inset:0;z-index:0;pointer-events:none}
+.stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#cfe0ff;opacity:.5;animation:tw 3.5s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.18}50%{opacity:.7}}
+.skyline{position:absolute;left:0;right:0;bottom:0;z-index:0;width:100%;height:170px;pointer-events:none;opacity:.9}
+
+/* ---------- HUD ---------- */
+#hud{position:relative;z-index:5;flex:0 0 auto;
+  padding:calc(var(--safe-t) + 8px) 12px 10px;display:flex;align-items:center;gap:10px;
+  background:linear-gradient(180deg, rgba(10,14,26,.92), rgba(10,14,26,.55) 70%, transparent);
+  backdrop-filter:blur(6px)}
+.hicon{width:42px;height:42px;border-radius:12px;background:var(--surface);border:1px solid var(--line);
+  font-size:19px;display:grid;place-items:center;flex:0 0 auto;position:relative;transition:transform .12s, background .2s}
+.hicon:active{transform:scale(.9)}
+.hicon .dot{position:absolute;top:-3px;right:-3px;width:11px;height:11px;border-radius:50%;background:var(--red);
+  border:2px solid var(--ink);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.35)}}
+.hud-main{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.rankrow{display:flex;align-items:center;gap:7px;max-width:100%}
+.rank-emblem{font-size:16px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+.rank-title{font-size:12.5px;font-weight:800;color:var(--rank);letter-spacing:.3px;text-transform:uppercase;white-space:nowrap}
+.hero-name{font-size:11px;color:var(--muted);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hero-name b{color:var(--text);font-weight:600}
+.valor{font-family:var(--body);font-weight:900;font-size:32px;line-height:1.05;letter-spacing:-.5px;
+  color:#fff;text-shadow:0 0 18px rgba(255,200,61,.25)}
+.valor .u{color:var(--gold);font-size:.62em;font-weight:800;margin-left:1px}
+.vps{font-size:12.5px;color:var(--gold);font-weight:700;margin-top:-1px}
+.vps b{color:var(--text)}
+
+/* ---------- panels ---------- */
+#panels{position:relative;z-index:4;flex:1 1 auto;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  padding:6px 12px 20px}
+.panel{display:none;animation:fade .25s ease}
+.panel.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.phead{display:flex;align-items:baseline;justify-content:space-between;margin:4px 2px 10px}
+.ptitle{font-family:var(--display);font-size:25px;letter-spacing:.5px;color:var(--text)}
+.psub{font-size:11.5px;color:var(--dim);font-weight:600}
+
+/* card / list */
+.card{background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--line);
+  border-radius:var(--r);padding:13px}
+.row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+  background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--line);
+  border-radius:14px;padding:11px 12px;margin-bottom:9px;position:relative;overflow:hidden;
+  transition:transform .1s, border-color .2s, opacity .2s}
+.row:active{transform:scale(.985)}
+.row.afford{border-color:#3a567f}
+.row.locked{opacity:.55;filter:saturate(.5)}
+.row .ico{width:46px;height:46px;border-radius:12px;flex:0 0 auto;display:grid;place-items:center;font-size:24px;
+  background:radial-gradient(120% 120% at 30% 20%, #20305a, #131d35);border:1px solid var(--line)}
+.row .mid{flex:1;min-width:0}
+.row .nm{font-weight:700;font-size:14.5px;display:flex;align-items:center;gap:6px}
+.row .ds{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.35}
+.row .rt{font-size:11px;color:var(--gold);font-weight:700;margin-top:3px}
+.row .rt b{color:var(--text)}
+.row .end{flex:0 0 auto;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:74px}
+.cost{font-weight:800;font-size:13.5px;color:var(--gold)}
+.cost.no{color:var(--dim)}
+.cnt{font-family:var(--display);font-size:21px;color:#fff;line-height:.9;letter-spacing:.5px}
+.tag{font-size:9.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--dim)}
+.lockmsg{font-size:10.5px;color:var(--dim);font-weight:700}
+.sweep{position:absolute;inset:0;border-radius:14px;pointer-events:none;opacity:0;
+  background:linear-gradient(120deg,transparent 30%, rgba(255,200,61,.18), transparent 70%)}
+.row.flash .sweep{animation:sweep .5s ease}
+@keyframes sweep{0%{opacity:0;transform:translateX(-40%)}40%{opacity:1}100%{opacity:0;transform:translateX(40%)}}
+.sectlbl{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--dim);
+  margin:14px 4px 9px;display:flex;align-items:center;gap:8px}
+.sectlbl:before,.sectlbl:after{content:"";height:1px;background:var(--line2);flex:1}
+.empty{text-align:center;color:var(--dim);font-size:12.5px;padding:26px 16px;font-weight:600}
+
+/* buy amount toggle */
+.buytog{display:flex;gap:6px;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:3px}
+.buytog button{flex:1;padding:6px 0;font-size:12px;font-weight:800;border-radius:8px;color:var(--muted)}
+.buytog button.on{background:linear-gradient(180deg,var(--blue),var(--blue2));color:#04122b;box-shadow:0 2px 10px rgba(60,160,255,.3)}
+
+/* ---------- City: medallion ---------- */
+.citywrap{display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:6px}
+.medwrap{position:relative;width:230px;height:230px;display:grid;place-items:center;margin-top:4px;touch-action:manipulation}
+.med-ring{position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg, var(--blue),var(--violet),var(--gold),var(--blue));
+  filter:blur(2px);opacity:.55;animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.med-glow{position:absolute;inset:14px;border-radius:50%;background:radial-gradient(circle,rgba(76,194,255,.28),transparent 65%);animation:breathe 3.4s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.07);opacity:1}}
+.med{position:relative;width:182px;height:182px;border-radius:50%;border:none;
+  background:radial-gradient(130% 130% at 32% 22%, #1c2c52, #0e1830 70%);
+  box-shadow:0 14px 34px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.06), inset 0 -10px 30px rgba(0,0,0,.45);
+  display:grid;place-items:center;transition:transform .07s}
+.med:active{transform:scale(.94)}
+.med.punch{animation:punch .18s ease}
+@keyframes punch{0%{transform:scale(.9)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+.med .em{font-size:74px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5))}
+.med .cap{position:absolute;bottom:24px;font-family:var(--display);font-size:15px;letter-spacing:1px;color:var(--gold);text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.tap-hint{font-size:12px;color:var(--muted);font-weight:600}
+.tap-hint b{color:var(--gold)}
+.float{position:absolute;left:50%;top:42%;transform:translateX(-50%);font-family:var(--display);
+  font-size:24px;color:var(--gold);text-shadow:0 2px 6px rgba(0,0,0,.6);pointer-events:none;
+  animation:floatup 1s ease-out forwards;z-index:3;white-space:nowrap}
+@keyframes floatup{0%{opacity:0;transform:translate(-50%,0) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,-74px) scale(1.05)}}
+
+.statline{display:flex;gap:9px;width:100%;max-width:380px}
+.stat{flex:1;background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--line);
+  border-radius:13px;padding:10px 8px;text-align:center}
+.stat .k{font-size:10px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.stat .v{font-size:15px;font-weight:800;margin-top:3px}
+.stat .v.gold{color:var(--gold)} .stat .v.blue{color:var(--blue)}
+
+/* crime ticker */
+.ticker{width:100%;max-width:380px;background:rgba(13,20,36,.7);border:1px solid var(--line2);border-radius:12px;
+  padding:9px 12px;min-height:40px}
+.ticker .t-lbl{font-size:9.5px;font-weight:800;letter-spacing:1px;color:var(--red);text-transform:uppercase;margin-bottom:3px}
+.ticker .t-line{font-size:12px;color:var(--muted);animation:fade .3s ease}
+.ticker .t-line b{color:var(--text)}
+
+/* active threat banner (city) */
+.threatbar{width:100%;max-width:380px;border-radius:13px;padding:11px 13px;display:flex;align-items:center;gap:11px;
+  background:linear-gradient(180deg,rgba(70,18,28,.7),rgba(40,12,20,.6));border:1px solid #5a2230}
+.threatbar .em{font-size:28px}
+.threatbar .mid{flex:1;min-width:0}
+.threatbar .nm{font-weight:800;font-size:13.5px;color:#ffd0d6}
+.threatbar .hpbar{height:7px;border-radius:5px;background:#2a1420;overflow:hidden;margin-top:5px}
+.threatbar .hpfill{height:100%;background:linear-gradient(90deg,var(--red),#ff8a96);transition:width .15s}
+.threatbar .go{font-size:11px;font-weight:800;color:#ffd0d6;background:rgba(255,77,94,.18);
+  border:1px solid #6a2a38;border-radius:9px;padding:7px 10px}
+
+/* ---------- Abilities ---------- */
+.abil{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.ab{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--surface),var(--surface2));
+  border:1px solid var(--line);border-radius:14px;padding:11px;text-align:left}
+.ab.ready{border-color:var(--violet);box-shadow:0 0 0 1px rgba(155,107,255,.25), 0 6px 16px rgba(155,107,255,.12)}
+.ab.active{border-color:var(--gold);box-shadow:0 0 0 1px rgba(255,200,61,.3)}
+.ab .ab-top{display:flex;align-items:center;gap:8px}
+.ab .ab-em{font-size:22px}
+.ab .ab-nm{font-weight:800;font-size:13px}
+.ab .ab-ds{font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.3;min-height:27px}
+.ab .ab-st{margin-top:7px;font-size:11px;font-weight:800}
+.ab .ab-st.r{color:var(--violet)} .ab .ab-st.a{color:var(--gold)} .ab .ab-st.c{color:var(--dim)}
+.ab .cdfill{position:absolute;left:0;bottom:0;height:3px;background:var(--violet);width:0}
+
+/* ---------- Threats panel ---------- */
+.boss{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:18px 14px 16px}
+.boss .bem{font-size:72px;filter:drop-shadow(0 6px 14px rgba(255,77,94,.3));animation:hover 3s ease-in-out infinite}
+@keyframes hover{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.boss .bnm{font-family:var(--display);font-size:28px;letter-spacing:.5px;color:#ffd0d6}
+.boss .bkind{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.boss .bkind.major{color:var(--gold)} .boss .bkind.minor{color:var(--muted)}
+.boss .bstory{font-size:12.5px;color:var(--muted);max-width:300px;line-height:1.45;font-style:italic}
+.bhp{width:100%;max-width:320px;height:16px;border-radius:9px;background:#2a1420;overflow:hidden;position:relative;border:1px solid #4a2030}
+.bhpfill{height:100%;background:linear-gradient(90deg,#ff3344,#ff8a96);transition:width .12s}
+.bhptxt{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.strike{width:100%;max-width:320px;margin-top:6px;padding:16px;border-radius:15px;font-family:var(--display);
+  font-size:24px;letter-spacing:1.5px;color:#3a0810;
+  background:linear-gradient(180deg,#ff8a96,var(--red));box-shadow:0 8px 22px rgba(255,77,94,.35), inset 0 2px 0 rgba(255,255,255,.3);
+  transition:transform .07s}
+.strike:active{transform:scale(.96)}
+.brew{font-size:12px;color:var(--gold);font-weight:700}.brew b{color:var(--text)}
+.dps{font-size:11px;color:var(--muted)}.dps b{color:var(--blue)}
+
+/* ---------- Legacy ---------- */
+.legacy-hero{text-align:center;padding:14px 12px 6px}
+.legacy-hero .lem{font-size:46px}
+.legacy-hero .lt{font-family:var(--display);font-size:26px;color:var(--aqua);letter-spacing:.5px;margin-top:2px}
+.legacy-hero .lhave{font-size:13px;color:var(--muted);margin-top:4px}
+.legacy-hero .lhave b{color:var(--aqua);font-weight:800}
+.prestige-btn{width:100%;margin-top:12px;padding:15px;border-radius:15px;font-family:var(--display);font-size:21px;letter-spacing:1px;
+  color:#042018;background:linear-gradient(180deg,#6ff0c8,var(--aqua));box-shadow:0 8px 22px rgba(70,229,183,.3), inset 0 2px 0 rgba(255,255,255,.35);
+  transition:transform .1s, filter .2s}
+.prestige-btn:active{transform:scale(.97)}
+.prestige-btn.dis{filter:grayscale(.8) brightness(.7);}
+.prestige-sub{font-size:11.5px;color:var(--dim);text-align:center;margin-top:7px;font-weight:600}
+.sk{display:grid;grid-template-columns:1fr;gap:9px}
+.sknode{display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,var(--surface),var(--surface2));
+  border:1px solid var(--line);border-radius:13px;padding:11px;transition:border-color .2s,opacity .2s}
+.sknode.have{border-color:var(--aqua);background:linear-gradient(180deg,rgba(70,229,183,.08),var(--surface2))}
+.sknode.afford{border-color:#2f6f63}
+.sknode.lock{opacity:.5}
+.sknode .se{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-size:21px;flex:0 0 auto;
+  background:radial-gradient(120% 120% at 30% 20%, #143a33, #0e1d28);border:1px solid var(--line)}
+.sknode .smid{flex:1;min-width:0}.sknode .snm{font-weight:800;font-size:13.5px}
+.sknode .sds{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3}
+.sknode .scost{font-size:13px;font-weight:800;color:var(--aqua);flex:0 0 auto}
+.sknode .scost.owned{color:var(--aqua)}.sknode .scost.no{color:var(--dim)}
+
+/* ---------- tab bar ---------- */
+#tabs{position:relative;z-index:6;flex:0 0 auto;display:flex;
+  padding:6px 8px calc(var(--safe-b) + 6px);gap:4px;
+  background:linear-gradient(0deg, rgba(10,14,26,.96), rgba(10,14,26,.7));border-top:1px solid var(--line2);backdrop-filter:blur(8px)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px 5px;border-radius:12px;
+  color:var(--dim);position:relative;transition:color .2s, background .2s, transform .1s}
+.tab .ti{font-size:21px;line-height:1;transition:transform .15s}
+.tab .tl{font-size:9.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase}
+.tab.on{color:var(--text)}
+.tab.on .ti{transform:translateY(-1px) scale(1.08)}
+.tab.on:after{content:"";position:absolute;top:3px;left:50%;transform:translateX(-50%);width:26px;height:3px;border-radius:3px;
+  background:var(--rank);box-shadow:0 0 10px var(--rank)}
+.tab:active{transform:scale(.92)}
+.tab.locked{color:#384a6b;pointer-events:none}
+.tab .lk{position:absolute;top:4px;right:calc(50% - 22px);font-size:10px;opacity:.8}
+.tab .nd{position:absolute;top:4px;right:calc(50% - 20px);width:9px;height:9px;border-radius:50%;background:var(--red);border:2px solid var(--ink);animation:pulse 1.2s infinite}
+.tab.justunlocked{animation:popin .5s ease}
+@keyframes popin{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+
+/* ---------- toasts ---------- */
+#toasts{position:absolute;left:0;right:0;top:calc(var(--safe-t) + var(--hud-h));z-index:30;
+  display:flex;flex-direction:column;align-items:center;gap:7px;pointer-events:none;padding:0 16px}
+.toast{max-width:340px;background:linear-gradient(180deg,#172340,#101a30);border:1px solid var(--line);
+  border-left:4px solid var(--gold);border-radius:12px;padding:10px 14px;box-shadow:0 10px 30px rgba(0,0,0,.5);
+  animation:toastin .35s ease, toastout .4s ease 3.2s forwards}
+.toast.unlock{border-left-color:var(--blue)} .toast.win{border-left-color:var(--aqua)} .toast.warn{border-left-color:var(--red)}
+.toast .tt{font-weight:800;font-size:13px;display:flex;align-items:center;gap:7px}
+.toast .tb{font-size:11.5px;color:var(--muted);margin-top:2px}
+@keyframes toastin{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+@keyframes toastout{to{opacity:0;transform:translateY(-10px)}}
+
+/* ---------- comic burst (boss defeat) ---------- */
+#burst{position:absolute;inset:0;z-index:40;display:none;place-items:center;pointer-events:none}
+#burst.show{display:grid;animation:fade .2s ease}
+.burst-word{font-family:var(--display);font-size:84px;color:var(--gold);
+  text-shadow:5px 5px 0 var(--red), -2px -2px 0 #fff, 0 0 30px rgba(255,200,61,.6);
+  transform:rotate(-9deg);animation:bursthit .7s cubic-bezier(.2,1.4,.4,1)}
+@keyframes bursthit{0%{transform:rotate(-9deg) scale(.2);opacity:0}40%{opacity:1}70%{transform:rotate(-9deg) scale(1.15)}100%{transform:rotate(-9deg) scale(1);opacity:0}}
+.spark{position:absolute;width:8px;height:8px;border-radius:2px;background:var(--gold)}
+
+/* ---------- modal ---------- */
+#modalHost{position:absolute;inset:0;z-index:50;display:none}
+#modalHost.show{display:block}
+.scrim{position:absolute;inset:0;background:rgba(5,8,16,.7);backdrop-filter:blur(3px);animation:fade .2s ease;
+  display:grid;place-items:center;padding:20px}
+.modal{width:100%;max-width:380px;max-height:84vh;overflow-y:auto;background:linear-gradient(180deg,#13203c,#0d1426);
+  border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.6);animation:modalin .28s cubic-bezier(.2,1.2,.3,1)}
+@keyframes modalin{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:none}}
+.mhead{padding:18px 18px 10px;text-align:center}
+.mhead .me{font-size:40px}
+.mhead .mt{font-family:var(--display);font-size:24px;letter-spacing:.5px;margin-top:4px}
+.mhead .mt.aqua{color:var(--aqua)} .mhead .mt.gold{color:var(--gold)} .mhead .mt.red{color:var(--red)} .mhead .mt.blue{color:var(--blue)}
+.mbody{padding:4px 18px 8px;font-size:13px;color:var(--muted);line-height:1.5}
+.mbody b{color:var(--text)} .mbody .big{color:var(--gold);font-weight:800;font-size:15px}
+.mfoot{padding:14px 18px calc(18px + 0px);display:flex;gap:9px}
+.btn{flex:1;padding:13px;border-radius:13px;font-weight:800;font-size:14px;text-align:center;transition:transform .1s, filter .2s}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:linear-gradient(180deg,var(--blue),var(--blue2));color:#04122b}
+.btn.go{background:linear-gradient(180deg,#6ff0c8,var(--aqua));color:#042018}
+.btn.danger{background:linear-gradient(180deg,#ff6b78,var(--red));color:#3a0810}
+.btn.ghost{background:var(--surface);border:1px solid var(--line);color:var(--text)}
+
+/* origin chooser */
+.origins{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:6px 18px 4px}
+.orig{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 11px;text-align:center;transition:border-color .15s,transform .1s}
+.orig:active{transform:scale(.96)}
+.orig.sel{border-color:var(--blue);box-shadow:0 0 0 1px rgba(76,194,255,.4)}
+.orig .oe{font-size:32px}
+.orig .on{font-weight:800;font-size:14px;margin-top:5px}
+.orig .of{font-size:10.5px;color:var(--gold);font-weight:700;margin-top:4px;line-height:1.3}
+.namein{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px;
+  color:var(--text);font-family:inherit;font-size:14px;font-weight:600;text-align:center;margin:2px 0 2px}
+.namein:focus{outline:none;border-color:var(--blue)}
+
+/* settings rows */
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 4px;border-bottom:1px solid var(--line2)}
+.setrow:last-child{border-bottom:none}
+.setrow .sk{font-weight:700;font-size:13.5px}.setrow .sv{font-size:11px;color:var(--dim);margin-top:2px}
+.toggle{width:46px;height:27px;border-radius:14px;background:var(--surface);border:1px solid var(--line);position:relative;flex:0 0 auto}
+.toggle.on{background:linear-gradient(90deg,var(--blue2),var(--blue))}
+.toggle i{position:absolute;top:2px;left:2px;width:21px;height:21px;border-radius:50%;background:#fff;transition:left .18s}
+.toggle.on i{left:21px}
+.minibtn{padding:8px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-weight:700;font-size:12px}
+.minibtn.danger{color:var(--red);border-color:#4a2030}
+.imparea{width:100%;height:84px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;color:var(--text);
+  font-family:monospace;font-size:10px;padding:8px;resize:none}
+
+/* achievements grid */
+.achgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:2px 0}
+.ach{aspect-ratio:1;border-radius:12px;display:grid;place-items:center;text-align:center;gap:2px;
+  background:var(--surface2);border:1px solid var(--line2);opacity:.4;filter:grayscale(1);position:relative}
+.ach.got{opacity:1;filter:none;border-color:var(--gold);background:linear-gradient(180deg,rgba(255,200,61,.1),var(--surface2))}
+.ach .ae{font-size:23px}
+.ach .an{font-size:8px;font-weight:700;color:var(--muted);padding:0 3px;line-height:1.1}
+.ach.got .an{color:var(--text)}
+
+.scrollpad{height:8px}
+@media (max-width:340px){ .valor{font-size:27px} .med{width:164px;height:164px} .med .em{font-size:64px} .medwrap{width:210px;height:210px} }
+@media (prefers-reduced-motion: reduce){
+  .med-ring,.med-glow,.stars i,.boss .bem,.burst-word{animation:none!important}
+  *{animation-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="sky"></div>
+  <div class="halftone"></div>
+  <div class="stars" id="stars"></div>
+  <svg class="skyline" viewBox="0 0 400 170" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="bld" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#141d33"/><stop offset="100%" stop-color="#0a0f1c"/></linearGradient></defs>
+    <g fill="url(#bld)">
+      <rect x="0" y="96" width="34" height="74"/><rect x="30" y="70" width="26" height="100"/>
+      <rect x="54" y="110" width="30" height="60"/><rect x="80" y="54" width="30" height="116"/>
+      <rect x="108" y="88" width="22" height="82"/><rect x="128" y="116" width="34" height="54"/>
+      <rect x="160" y="62" width="26" height="108"/><rect x="184" y="100" width="30" height="70"/>
+      <rect x="212" y="44" width="24" height="126"/><rect x="234" y="92" width="32" height="78"/>
+      <rect x="264" y="72" width="26" height="98"/><rect x="288" y="118" width="34" height="52"/>
+      <rect x="320" y="60" width="26" height="110"/><rect x="344" y="98" width="30" height="72"/>
+      <rect x="372" y="80" width="28" height="90"/>
+    </g>
+    <g fill="#ffce5a" opacity="0.5">
+      <rect x="86" y="64" width="4" height="5"/><rect x="94" y="64" width="4" height="5"/><rect x="86" y="76" width="4" height="5"/>
+      <rect x="218" y="56" width="4" height="5"/><rect x="226" y="56" width="4" height="5"/><rect x="218" y="70" width="4" height="5"/>
+      <rect x="166" y="74" width="4" height="5"/><rect x="174" y="86" width="4" height="5"/>
+      <rect x="326" y="72" width="4" height="5"/><rect x="334" y="86" width="4" height="5"/>
+    </g>
+  </svg>
+
+  <header id="hud">
+    <button class="hicon" id="btnAch" aria-label="Achievements">🏆</button>
+    <div class="hud-main">
+      <div class="rankrow">
+        <span class="rank-emblem" id="rankEmblem">🔰</span>
+        <span class="rank-title" id="rankTitle">Rookie</span>
+        <span class="hero-name">· <b id="heroName">Hero</b></span>
+      </div>
+      <div class="valor"><span id="valor">0</span></div>
+      <div class="vps"><b id="vps">0</b> Valor/sec</div>
+    </div>
+    <button class="hicon" id="btnSet" aria-label="Settings">⚙️</button>
+  </header>
+
+  <main id="panels">
+    <!-- CITY -->
+    <section class="panel on" data-panel="city">
+      <div class="citywrap">
+        <div id="cityThreat"></div>
+        <div class="medwrap" id="medwrap">
+          <div class="med-ring"></div><div class="med-glow"></div>
+          <button class="med" id="med"><span class="em" id="medEm">🦸</span><span class="cap">FIGHT CRIME</span></button>
+        </div>
+        <div class="tap-hint">Tap to patrol · <b>+<span id="tapPow">1</span></b> Valor each</div>
+        <div class="statline">
+          <div class="stat"><div class="k">Per Second</div><div class="v gold" id="cityVps">0</div></div>
+          <div class="stat"><div class="k">Per Tap</div><div class="v blue" id="cityTap">1</div></div>
+          <div class="stat"><div class="k">Team Size</div><div class="v" id="cityTeam">0</div></div>
+        </div>
+        <div class="ticker">
+          <div class="t-lbl">📡 Police Scanner</div>
+          <div class="t-line" id="ticker">All quiet on the streets… for now.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEAM -->
+    <section class="panel" data-panel="team">
+      <div class="phead"><div class="ptitle">Your Team</div><div class="psub" id="teamSub"></div></div>
+      <div class="buytog" id="buytog" style="margin-bottom:11px">
+        <button data-amt="1">Buy 1</button><button data-amt="10">Buy 10</button>
+        <button data-amt="100">Buy 100</button><button data-amt="-1">Max</button>
+      </div>
+      <div id="teamList"></div>
+    </section>
+
+    <!-- POWERS -->
+    <section class="panel" data-panel="powers">
+      <div class="phead"><div class="ptitle">Powers</div><div class="psub">Abilities & upgrades</div></div>
+      <div id="abilWrap"></div>
+      <div id="upgList"></div>
+    </section>
+
+    <!-- THREATS -->
+    <section class="panel" data-panel="threats">
+      <div class="phead"><div class="ptitle">Threats</div><div class="psub" id="threatSub"></div></div>
+      <div id="threatBody"></div>
+    </section>
+
+    <!-- LEGACY -->
+    <section class="panel" data-panel="legacy">
+      <div class="phead"><div class="ptitle">Legacy</div><div class="psub">Prestige & mastery</div></div>
+      <div id="legacyBody"></div>
+    </section>
+    <div class="scrollpad"></div>
+  </main>
+
+  <nav id="tabs">
+    <button class="tab on" data-tab="city"><span class="ti">🏙️</span><span class="tl">City</span></button>
+    <button class="tab" data-tab="team"><span class="ti">👥</span><span class="tl">Team</span></button>
+    <button class="tab" data-tab="powers"><span class="ti">⚡</span><span class="tl">Powers</span></button>
+    <button class="tab" data-tab="threats"><span class="ti">⚔️</span><span class="tl">Threats</span></button>
+    <button class="tab" data-tab="legacy"><span class="ti">⭐</span><span class="tl">Legacy</span></button>
+  </nav>
+
+  <div id="toasts"></div>
+  <div id="burst"></div>
+  <div id="modalHost"></div>
+</div>
+
+<script>
+"use strict";
+/* =====================================================================
+   CAPE CITY — Idle Hero   ·  single-file game engine
+   ===================================================================== */
+const IC={ i192:'icons/icon-192.png', i512:'icons/icon-512.png', mask:'icons/icon-maskable-512.png' };
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const now=()=>Date.now();
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const SAVEKEY='capecity_save_v1';
+
+/* ---------------- number formatting ---------------- */
+const SUF=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc','UD','DD','TD','QaD','QiD','SxD','SpD','OcD','NoD','Vg'];
+function fmt(n){
+  n = n||0;
+  if(!isFinite(n)) return '∞';
+  if(n<0) return '-'+fmt(-n);
+  if(n<1000){ return (n>=100||Number.isInteger(n)) ? String(Math.floor(n)) : (Math.round(n*10)/10).toString(); }
+  let t=Math.floor(Math.log10(n)/3);
+  let m=n/Math.pow(1000,t);
+  if(t>=SUF.length){ return n.toExponential(2).replace('e+','e'); }
+  let s = m>=100? m.toFixed(0) : m>=10? m.toFixed(1) : m.toFixed(2);
+  return s+SUF[t];
+}
+function fmtTime(sec){
+  sec=Math.max(0,Math.floor(sec));
+  if(sec<60) return sec+'s';
+  if(sec<3600) return Math.floor(sec/60)+'m '+(sec%60)+'s';
+  if(sec<86400) return Math.floor(sec/3600)+'h '+Math.floor((sec%3600)/60)+'m';
+  return Math.floor(sec/86400)+'d '+Math.floor((sec%86400)/3600)+'h';
+}
+
+/* ---------------- static data ---------------- */
+const ORIGINS=[
+  {id:'power', name:'Powerhouse', emoji:'💪', fx:'+150% tap power',                blurb:'Born unbreakable. Your strikes hit far harder.'},
+  {id:'speed', name:'Speedster',  emoji:'⚡', fx:'+40% all production',            blurb:'Faster than thought. Everything you build produces more.'},
+  {id:'mind',  name:'Mastermind', emoji:'🧠', fx:'−15% team costs',                blurb:'Three steps ahead. Allies and gear cost less.'},
+  {id:'cosmic',name:'Cosmic',     emoji:'✨', fx:'+3h offline · +20% Legend',      blurb:'Touched by the stars. Bigger offline hauls and prestige.'},
+];
+
+const COST_GROWTH=1.15;
+const GENS=[
+  {id:'patrol',  name:'Street Patrol',     emoji:'👟', cost:15,     rate:0.2,    unlock:0},
+  {id:'sidekick',name:'Sidekick',          emoji:'🦸', cost:110,    rate:1.4,    unlock:60},
+  {id:'hotline', name:'Hero Hotline',      emoji:'☎️', cost:1.2e3,  rate:8,      unlock:650},
+  {id:'drone',   name:'Patrol Drone',      emoji:'🛸', cost:13e3,   rate:47,     unlock:7e3},
+  {id:'k9',      name:'K-9 Unit',          emoji:'🐕', cost:140e3,  rate:260,    unlock:75e3},
+  {id:'vigil',   name:'Vigilante',         emoji:'🥷', cost:1.6e6,  rate:1400,   unlock:8e5},
+  {id:'tower',   name:'Watchtower',        emoji:'🗼', cost:21e6,   rate:7800,   unlock:1.1e7},
+  {id:'suit',    name:'Power-Suit Squad',  emoji:'🤖', cost:350e6,  rate:44000,  unlock:1.6e8},
+  {id:'sat',     name:'Satellite Net',     emoji:'🛰️', cost:5.4e9,  rate:2.6e5,  unlock:2.6e9},
+  {id:'academy', name:'Hero Academy',      emoji:'🎓', cost:80e9,   rate:1.6e6,  unlock:4.2e10},
+  {id:'league',  name:'Hero League HQ',    emoji:'🏛️', cost:1.1e12, rate:1.0e7,  unlock:6.5e11},
+  {id:'orbital', name:'Orbital Guardian',  emoji:'🌍', cost:16e12,  rate:6.5e7,  unlock:9.5e12},
+];
+
+/* upgrades: click, clickpct, global, and auto-generated per-gen tiers */
+const UPGRADES=[
+  {id:'gloves',   name:'Power Gloves',      emoji:'🥊', cost:200,   type:'click',    mult:2,  desc:'Double your tap power.'},
+  {id:'reflex',   name:'Combat Reflexes',   emoji:'🌀', cost:6e3,   type:'click',    mult:2,  desc:'Double your tap power.'},
+  {id:'momentum', name:'Heroic Momentum',   emoji:'💢', cost:1.4e5, type:'clickpct', val:0.02,desc:'Each tap also gains +2% of your Valor/sec.'},
+  {id:'titan',    name:'Titan Grip',        emoji:'✊', cost:9e6,   type:'click',    mult:3,  desc:'Triple your tap power.'},
+  {id:'overdrive',name:'Adrenal Overdrive', emoji:'🔋', cost:2.5e9, type:'clickpct', val:0.04,desc:'Each tap also gains +4% of your Valor/sec.'},
+  {id:'morale',   name:'City Morale',       emoji:'🎉', cost:6e4,   type:'global',   mult:1.25,desc:'+25% to ALL Valor production.'},
+  {id:'press',    name:'Good Press',        emoji:'📰', cost:2.4e6, type:'global',   mult:1.25,desc:'+25% to ALL Valor production.'},
+  {id:'beacon',   name:'Hero Beacon',       emoji:'🔆', cost:1e9,   type:'global',   mult:1.5, desc:'+50% to ALL Valor production.'},
+  {id:'unity',    name:'United Front',      emoji:'🤝', cost:6e11,  type:'global',   mult:1.5, desc:'+50% to ALL Valor production.'},
+  {id:'legendcity',name:'City of Legends',  emoji:'🌆', cost:5e13,  type:'global',   mult:2,   desc:'Double ALL Valor production.'},
+];
+const GEN_TIERS=[10,25,50,100,150];
+GENS.forEach(g=>{
+  GEN_TIERS.forEach((m,i)=>{
+    UPGRADES.push({
+      id:g.id+'_t'+m, type:'gentier', gen:g.id, need:m, emoji:g.emoji,
+      name:g.name+' ×2', cost: g.cost*Math.pow(COST_GROWTH,m)*(7+i*5),
+      desc:`Doubles ${g.name} output. Needs ${m} owned.`, mult:2
+    });
+  });
+});
+
+const POWERS=[
+  {id:'adrenaline',name:'Adrenaline Rush', emoji:'⚡', unlock:5e3,  dur:20, cd:120, kind:'prodmult', mult:5,
+    desc:'×5 Valor production for 20s.'},
+  {id:'strike',    name:'Heroic Strike',   emoji:'💥', unlock:6e5,  dur:0,  cd:300, kind:'burst', sec:90,
+    desc:'Instantly bank 90 seconds of production.'},
+  {id:'rally',     name:'Rally the City',  emoji:'📣', unlock:1.1e7,dur:30, cd:200, kind:'rally', clickMult:4, prodMult:2,
+    desc:'×4 tap power and ×2 production for 30s.'},
+  {id:'overcharge',name:'Overcharge',      emoji:'🌟', unlock:2.5e9,dur:15, cd:260, kind:'prodmult', mult:12,
+    desc:'×12 Valor production for 15s.'},
+];
+
+const BOSSES=[
+  {name:'The Tagger',    emoji:'🎨', hp:2.2e3, unlock:1.5e3, perma:0.02, reward:120,
+   intro:'Spray-paint blankets every wall downtown. "You can\'t arrest art!"', win:'Tagged and bagged. The city walls are clean again.'},
+  {name:'Razor',         emoji:'🔪', hp:1.3e5, unlock:9e4,   perma:0.03, reward:90,
+   intro:'A gang boss is carving up the docks for territory.', win:'Razor\'s crew scatters into the night. The docks are quiet.'},
+  {name:'Madame Mirage', emoji:'🎭', hp:4.5e6, unlock:2.2e6, perma:0.03, reward:80,
+   intro:'Illusions ripple across the skyline — nothing is what it seems.', win:'The illusions shatter like glass. Reality snaps back.'},
+  {name:'The Junker',    emoji:'⚙️', hp:1e8,   unlock:5.5e7, perma:0.04, reward:70,
+   intro:'A mad inventor pilots a colossus stitched from scrap metal.', win:'The colossus groans and collapses into a heap of bolts.'},
+  {name:'Voltaic',       emoji:'🔌', hp:3.4e9, unlock:1.6e9, perma:0.05, reward:60,
+   intro:'The power grid screams. Voltaic feeds on the whole city\'s electricity.', win:'Voltaic is grounded. Streetlights flicker back to life.'},
+  {name:'Lord Eclipse',  emoji:'🌑', hp:9e10,  unlock:5.5e10,perma:0.06, reward:55,
+   intro:'A shroud of darkness swallows the sun. Panic spreads block by block.', win:'Dawn cracks the horizon. Eclipse is undone.'},
+  {name:'The Devourer',  emoji:'🪐', hp:2.4e12, unlock:8.5e11,perma:0.08, reward:50,
+   intro:'A world-eater the size of a moon turns its hunger toward Earth.', win:'The Devourer is repelled into the void. The planet endures — for now.'},
+];
+
+const RANKS=[
+  {t:0,     name:'Rookie',          emoji:'🔰', accent:'#8ea3c8'},
+  {t:1e3,   name:'Local Hero',      emoji:'🦸', accent:'#4cc2ff'},
+  {t:5e4,   name:'City Guardian',   emoji:'🛡️', accent:'#3da9fc'},
+  {t:1e6,   name:'Defender',        emoji:'⚔️', accent:'#6fd3ff'},
+  {t:5e7,   name:'Champion',        emoji:'🏅', accent:'#ffc83d'},
+  {t:1e9,   name:'Vanguard',        emoji:'⭐', accent:'#ffd95e'},
+  {t:5e10,  name:'Icon',            emoji:'🌟', accent:'#ff9d12'},
+  {t:1e12,  name:'Legend',          emoji:'👑', accent:'#ff6ad5'},
+  {t:5e13,  name:'Mythic',          emoji:'🔱', accent:'#b07bff'},
+  {t:1e15,  name:'Cosmic Guardian', emoji:'🪐', accent:'#46e5b7'},
+];
+
+const SKILLS=[
+  {id:'sk_click1', emoji:'🥊', name:'Iron Fists',      cost:1,  type:'clickmult', val:2,    desc:'Double tap power (permanent).'},
+  {id:'sk_prod1',  emoji:'🏭', name:'Mass Production',  cost:1,  type:'prod',      val:1.25, desc:'+25% all production (permanent).'},
+  {id:'sk_cost1',  emoji:'💰', name:'Bargaining',       cost:2,  type:'cost',      val:0.9,  desc:'Team costs −10% (permanent).'},
+  {id:'sk_offline1',emoji:'🌙',name:'Night Watch',      cost:2,  type:'offline',   val:4,    desc:'+4h offline earning cap.'},
+  {id:'sk_autoteam',emoji:'🤝',name:'Auto-Recruiter',   cost:3,  type:'flag',      desc:'Auto-buys your cheapest affordable team member every few seconds.', req:'sk_prod1'},
+  {id:'sk_cd1',    emoji:'⏱️', name:'Quick Recovery',   cost:3,  type:'cd',        val:0.75, desc:'Ability cooldowns −25%.'},
+  {id:'sk_threat1',emoji:'⚔️', name:'Vendetta',         cost:3,  type:'threat',    desc:'+50% Strike damage and +100% threat rewards.'},
+  {id:'sk_prod2',  emoji:'🚀', name:'Overproduction',   cost:5,  type:'prod',      val:1.5,  desc:'+50% all production (permanent).', req:'sk_prod1'},
+  {id:'sk_autopow',emoji:'🔁', name:'Auto-Powers',      cost:6,  type:'flag',      desc:'Automatically triggers abilities the moment they\'re ready.', req:'sk_cd1'},
+  {id:'sk_legend1',emoji:'⭐', name:'Inspiring Saga',   cost:6,  type:'legend',    val:1.25, desc:'+25% Legend earned on prestige.'},
+  {id:'sk_click2', emoji:'✊', name:'Seismic Strike',   cost:8,  type:'clickmult', val:3,    desc:'Triple tap power (permanent).', req:'sk_click1'},
+  {id:'sk_prod3',  emoji:'🌐', name:'Global Network',   cost:12, type:'prod',      val:2,    desc:'Double all production (permanent).', req:'sk_prod2'},
+];
+
+const ACH=[
+  {id:'a_tap1',   emoji:'👊', name:'First Punch',   cond:s=>s.clicks>=1},
+  {id:'a_tap100', emoji:'💪', name:'Brawler',       cond:s=>s.clicks>=100},
+  {id:'a_tap1k',  emoji:'🥊', name:'Knuckles',      cond:s=>s.clicks>=1000},
+  {id:'a_team5',  emoji:'🧑‍🤝‍🧑', name:'Squad',     cond:s=>teamSize()>=5},
+  {id:'a_team25', emoji:'👥', name:'Task Force',    cond:s=>teamSize()>=25},
+  {id:'a_team100',emoji:'🏟️', name:'An Army',       cond:s=>teamSize()>=100},
+  {id:'a_patrol50',emoji:'👟',name:'Beat Cop',      cond:s=>(s.gens.patrol||0)>=50},
+  {id:'a_v1k',    emoji:'🪙', name:'Pocket Change', cond:s=>s.lifetime>=1e3},
+  {id:'a_v1m',    emoji:'💵', name:'Millionaire',   cond:s=>s.lifetime>=1e6},
+  {id:'a_v1b',    emoji:'💎', name:'Billionaire',   cond:s=>s.lifetime>=1e9},
+  {id:'a_v1t',    emoji:'🏆', name:'Trillionaire',  cond:s=>s.lifetime>=1e12},
+  {id:'a_boss1',  emoji:'⚔️', name:'First Blood',   cond:s=>s.villains>=1},
+  {id:'a_boss3',  emoji:'🛡️', name:'Crime Fighter', cond:s=>s.villains>=3},
+  {id:'a_bossall',emoji:'🌟', name:'City Savior',   cond:s=>s.storyIndex>=BOSSES.length},
+  {id:'a_pow1',   emoji:'⚡', name:'Empowered',     cond:s=>s._usedPower},
+  {id:'a_rankC',  emoji:'🏅', name:'Champion',      cond:s=>rankIdx()>=4},
+  {id:'a_rankL',  emoji:'👑', name:'Living Legend', cond:s=>rankIdx()>=7},
+  {id:'a_pres1',  emoji:'♻️', name:'New Generation',cond:s=>s.prestiges>=1},
+  {id:'a_pres5',  emoji:'🔄', name:'Mentor',        cond:s=>s.prestiges>=5},
+  {id:'a_pres25', emoji:'🌀', name:'Eternal',       cond:s=>s.prestiges>=25},
+  {id:'a_legend10',emoji:'⭐',name:'Storied',       cond:s=>s.legend>=10},
+  {id:'a_legend100',emoji:'✨',name:'Mythmaker',    cond:s=>s.legend>=100},
+  {id:'a_allglobal',emoji:'🎆',name:'Full Support', cond:s=>UPGRADES.filter(u=>u.type==='global').every(u=>s.ups[u.id])},
+  {id:'a_skill5', emoji:'🧠', name:'Master',        cond:s=>SKILLS.filter(k=>s.ups[k.id]).length>=5},
+];
+
+const CRIMES=['Mugging','Carjacking','Bank alarm','Purse snatch','Arson attempt','Hostage scare','Jewel heist',
+  'Hit-and-run','Smash-and-grab','Subway brawl','Rooftop chase','Bomb threat','Kidnapping','Cat stuck in tree'];
+const STREETS=['5th & Vine','Dockside','Old Town','Neon Plaza','Harbor Row','West End','Steel Bridge','Granite Park',
+  'Midtown','The Heights','Cobalt St.','Aurora Ave.','Riverside','Lowtown'];
+
+/* ---------------- state ---------------- */
+let S=null;
+function defaultState(){
+  return {
+    v:0, earned:0, lifetime:0, clicks:0,
+    gens:{}, ups:{}, pow:{}, powActive:{},
+    legend:0, prestiges:0, villains:0, storyIndex:0,
+    threat:null, threatCD:18, permaBonus:0,
+    ach:{}, origin:null, name:'', buyAmt:1,
+    muted:false, reduceFx:false,
+    t:now(), created:now(),
+    _usedPower:false, _seenTabs:{},
+  };
+}
+function save(){
+  try{ S.t=now(); localStorage.setItem(SAVEKEY, btoa(unescape(encodeURIComponent(JSON.stringify(S))))); }catch(e){}
+}
+function rawLoad(){
+  try{
+    const r=localStorage.getItem(SAVEKEY); if(!r) return null;
+    let txt; try{ txt=decodeURIComponent(escape(atob(r))); }catch(e){ txt=r; }
+    return JSON.parse(txt);
+  }catch(e){ return null; }
+}
+function load(){
+  const d=rawLoad();
+  S=defaultState();
+  if(d && typeof d==='object'){ Object.assign(S, d);
+    S.gens=d.gens||{}; S.ups=d.ups||{}; S.pow=d.pow||{}; S.powActive=d.powActive||{}; S.ach=d.ach||{}; S._seenTabs=d._seenTabs||{};
+  }
+  return !!d;
+}
+
+/* ---------------- derived / calc ---------------- */
+const GMAP={}; GENS.forEach(g=>GMAP[g.id]=g);
+const UMAP={}; UPGRADES.forEach(u=>UMAP[u.id]=u);
+const PMAP={}; POWERS.forEach(p=>PMAP[p.id]=p);
+const SKMAP={}; SKILLS.forEach(k=>SKMAP[k.id]=k);
+
+function teamSize(){ let n=0; for(const g of GENS) n+=(S.gens[g.id]||0); return n; }
+function skillVal(type,base){ let v=base; for(const k of SKILLS){ if(k.type===type && S.ups[k.id]) v*= (k.val!==undefined?k.val:1); } return v; }
+function hasFlag(id){ return !!S.ups[id]; }
+
+function rankIdx(){ let i=0; for(let r=0;r<RANKS.length;r++){ if(S.lifetime>=RANKS[r].t) i=r; } return i; }
+function curRank(){ return RANKS[rankIdx()]; }
+function nextRank(){ const i=rankIdx(); return i+1<RANKS.length? RANKS[i+1]:null; }
+
+function achCount(){ let n=0; for(const k in S.ach) if(S.ach[k]) n++; return n; }
+
+function costMult(){
+  let m=1;
+  if(S.origin==='mind') m*=0.85;
+  m*=skillVal('cost',1);
+  return m;
+}
+function genTierMult(id){
+  let m=1;
+  for(const t of GEN_TIERS){ if(S.ups[id+'_t'+t]) m*=2; }
+  return m;
+}
+function globalMult(){
+  let m=1;
+  for(const u of UPGRADES){ if(u.type==='global' && S.ups[u.id]) m*=u.mult; }
+  m*= 1 + rankIdx()*0.05;            // rank bonus
+  m*= 1 + S.legend*0.03;             // legend bonus
+  m*= 1 + achCount()*0.01;           // achievements
+  m*= 1 + (S.permaBonus||0);         // boss permanent bonuses
+  if(S.origin==='speed') m*=1.4;
+  m*=skillVal('prod',1);             // skill prod nodes
+  // active abilities
+  for(const id in S.powActive){
+    if(S.powActive[id]>now()){
+      const p=PMAP[id]; if(!p) continue;
+      if(p.kind==='prodmult') m*=p.mult;
+      if(p.kind==='rally') m*=p.prodMult;
+    }
+  }
+  return m;
+}
+function baseProduction(){ // before global mult
+  let p=0;
+  for(const g of GENS){ const c=S.gens[g.id]||0; if(c) p+= c*g.rate*genTierMult(g.id); }
+  return p;
+}
+function production(){ return baseProduction()*globalMult(); }
+
+function clickMultBase(){
+  let m=1;
+  if(S.origin==='power') m*=2.5;
+  for(const u of UPGRADES){ if(u.type==='click' && S.ups[u.id]) m*=u.mult; }
+  m*=skillVal('clickmult',1);
+  for(const id in S.powActive){ if(S.powActive[id]>now()){ const p=PMAP[id]; if(p&&p.kind==='rally') m*=p.clickMult; } }
+  return m;
+}
+function clickPct(){ let v=0; for(const u of UPGRADES){ if(u.type==='clickpct' && S.ups[u.id]) v+=u.val; } return v; }
+function clickPower(){
+  const prod=production();
+  let cp = 1*clickMultBase() + clickPct()*prod;
+  cp = Math.max(cp, prod*0.02);   // a tap is always worth ≥2% of a second
+  return cp;
+}
+function strikeMult(){ return hasFlag('sk_threat1')?1.5:1; }
+function threatRewardMult(){ return hasFlag('sk_threat1')?2:1; }
+function legendMult(){ let m=1; if(S.origin==='cosmic') m*=1.2; m*=skillVal('legend',1); return m; }
+function offlineCapHours(){ let h=4; if(S.origin==='cosmic') h+=3; for(const k of SKILLS){ if(k.type==='offline'&&S.ups[k.id]) h+=k.val; } return h; }
+function cdMult(){ return skillVal('cd',1); }
+
+function genCostTotal(g,owned,amt){
+  const base=g.cost*costMult()*Math.pow(COST_GROWTH,owned);
+  return base*(Math.pow(COST_GROWTH,amt)-1)/(COST_GROWTH-1);
+}
+function genMaxAffordable(g,owned,budget){
+  const base=g.cost*costMult()*Math.pow(COST_GROWTH,owned);
+  const rhs=1+budget*(COST_GROWTH-1)/base;
+  if(rhs<=1) return 0;
+  return Math.floor(Math.log(rhs)/Math.log(COST_GROWTH));
+}
+function buyAmtFor(g,owned){
+  if(S.buyAmt===-1){ return Math.max(1, genMaxAffordable(g,owned,S.v)); }
+  return S.buyAmt;
+}
+
+/* prestige */
+function legendGain(){
+  const base=Math.floor(Math.pow(Math.max(0,S.earned)/2.5e5, 0.5));
+  return Math.max(0, Math.floor(base*legendMult()));
+}
+function canPrestige(){ return S.lifetime>=1e6; }
+
+/* unlock thresholds for tabs */
+const TAB_UNLOCK={ city:0, team:0, powers:300, threats:1500, legacy:1e6 };
+function tabUnlocked(tab){ return S.lifetime>=(TAB_UNLOCK[tab]||0); }
+
+/* ---------------- rendering ---------------- */
+let curTab='city';
+const el={};
+function cacheEls(){
+  el.valor=$('#valor'); el.vps=$('#vps'); el.rankTitle=$('#rankTitle'); el.rankEmblem=$('#rankEmblem'); el.heroName=$('#heroName');
+  el.tapPow=$('#tapPow'); el.cityVps=$('#cityVps'); el.cityTap=$('#cityTap'); el.cityTeam=$('#cityTeam');
+  el.teamList=$('#teamList'); el.teamSub=$('#teamSub'); el.abilWrap=$('#abilWrap'); el.upgList=$('#upgList');
+  el.threatBody=$('#threatBody'); el.threatSub=$('#threatSub'); el.legacyBody=$('#legacyBody'); el.cityThreat=$('#cityThreat');
+}
+
+/* HUD + city stats — cheap, runs every frame */
+function renderHUD(){
+  el.valor.innerHTML=fmt(S.v)+'<span class="u">V</span>';
+  const prod=production();
+  el.vps.textContent=fmt(prod);
+  el.cityVps.textContent=fmt(prod);
+  const cp=clickPower();
+  el.cityTap.textContent=fmt(cp);
+  el.tapPow.textContent=fmt(cp);
+  el.cityTeam.textContent=teamSize();
+  const r=curRank();
+  el.rankTitle.textContent=r.name; el.rankEmblem.textContent=r.emoji;
+  el.heroName.textContent=S.name||'Hero';
+  document.documentElement.style.setProperty('--rank', r.accent);
+}
+
+/* generic: build a signature so we only rebuild list DOM when structure changes */
+let sig={};
+function changed(key,val){ if(sig[key]===val) return false; sig[key]=val; return true; }
+
+/* TEAM list */
+function buildTeamRows(){
+  el.teamList.innerHTML='';
+  let anyLocked=false, shown=0;
+  for(let i=0;i<GENS.length;i++){
+    const g=GENS[i];
+    const unlocked = S.lifetime>=g.unlock || (S.gens[g.id]||0)>0;
+    if(!unlocked){
+      // show the very next locked one as a teaser, then stop
+      const row=document.createElement('div'); row.className='row locked';
+      row.innerHTML=`<div class="ico">❔</div><div class="mid"><div class="nm">??? </div>
+        <div class="ds">A new ally awaits.</div></div>
+        <div class="end"><div class="lockmsg">Unlocks at<br>${fmt(g.unlock)} earned</div></div>`;
+      el.teamList.appendChild(row); anyLocked=true; break;
+    }
+    shown++;
+    const row=document.createElement('div'); row.className='row'; row.dataset.gen=g.id;
+    row.innerHTML=`<div class="sweep"></div>
+      <div class="ico">${g.emoji}</div>
+      <div class="mid">
+        <div class="nm">${g.name}</div>
+        <div class="rt">+<b class="rrate">0</b>/s each</div>
+        <div class="ds rsub">producing <b class="rtot">0</b>/s</div>
+      </div>
+      <div class="end"><div class="cnt rcnt">0</div><div class="cost rcost">0</div></div>`;
+    row.addEventListener('click',()=>buyGen(g.id,row));
+    el.teamList.appendChild(row);
+  }
+  if(shown===0 && !anyLocked){ el.teamList.innerHTML='<div class="empty">No allies available yet.</div>'; }
+}
+function updateTeamRows(){
+  el.teamSub.textContent = teamSize()+' recruited · '+fmt(production())+'/s';
+  $$('#teamList .row[data-gen]').forEach(row=>{
+    const g=GMAP[row.dataset.gen]; const owned=S.gens[g.id]||0;
+    const amt=buyAmtFor(g,owned);
+    const cost=genCostTotal(g,owned,Math.max(1,amt));
+    const can=S.v>=cost && amt>0;
+    row.classList.toggle('afford',can);
+    row.querySelector('.rcnt').textContent=owned;
+    row.querySelector('.rrate').textContent=fmt(g.rate*genTierMult(g.id)*globalMult());
+    row.querySelector('.rtot').textContent=fmt(owned*g.rate*genTierMult(g.id)*globalMult());
+    const cEl=row.querySelector('.rcost');
+    const label=(S.buyAmt===-1?('x'+Math.max(1,amt)+' · '):(amt>1?('x'+amt+' · '):''))+fmt(cost);
+    cEl.textContent=label; cEl.classList.toggle('no',!can);
+  });
+}
+
+/* POWERS: abilities + upgrades */
+function buildPowers(){
+  // abilities
+  const unlockedPows=POWERS.filter(p=>S.lifetime>=p.unlock);
+  if(unlockedPows.length===0){
+    el.abilWrap.innerHTML='<div class="card" style="margin-bottom:12px;text-align:center;color:var(--dim);font-size:12.5px">'+
+      '🔒 Active abilities unlock as you grow. First at <b style="color:var(--violet)">'+fmt(POWERS[0].unlock)+'</b> Valor earned.</div>';
+  } else {
+    el.abilWrap.innerHTML='<div class="sectlbl">Abilities</div><div class="abil" id="abilGrid"></div>';
+    const grid=$('#abilGrid');
+    unlockedPows.forEach(p=>{
+      const d=document.createElement('button'); d.className='ab'; d.dataset.pow=p.id;
+      d.innerHTML=`<div class="cdfill"></div><div class="ab-top"><span class="ab-em">${p.emoji}</span><span class="ab-nm">${p.name}</span></div>
+        <div class="ab-ds">${p.desc}</div><div class="ab-st"></div>`;
+      d.addEventListener('click',()=>castPower(p.id));
+      grid.appendChild(d);
+    });
+  }
+  // upgrades (non-gentier visible always if unlocked-ish; gentier when threshold met)
+  el.upgList.innerHTML='<div class="sectlbl">Upgrades</div>';
+  const list=document.createElement('div'); list.id='upgInner'; el.upgList.appendChild(list);
+}
+function visibleUpgrades(){
+  const out=[];
+  for(const u of UPGRADES){
+    if(S.ups[u.id]) continue; // bought
+    if(u.type==='gentier'){
+      const owned=S.gens[u.gen]||0;
+      if(owned>=u.need) out.push(u);
+    } else {
+      // reveal once within reach (cost < 8x current best-ever earned, or affordable) — keep simple: reveal when lifetime>=cost/12
+      if(S.lifetime>=u.cost/15 || S.v>=u.cost) out.push(u);
+    }
+  }
+  // sort by cost asc
+  out.sort((a,b)=>a.cost-b.cost);
+  return out.slice(0,8);
+}
+let upgSig='';
+function renderUpgrades(){
+  const vis=visibleUpgrades();
+  const s=vis.map(u=>u.id).join(',');
+  const inner=$('#upgInner'); if(!inner) return;
+  if(s!==upgSig){
+    upgSig=s; inner.innerHTML='';
+    if(vis.length===0){ inner.innerHTML='<div class="empty">All caught up. New upgrades appear as you progress.</div>'; }
+    vis.forEach(u=>{
+      const row=document.createElement('div'); row.className='row'; row.dataset.up=u.id;
+      const tag=u.type==='click'||u.type==='clickpct'?'Tap':u.type==='global'?'Global':'Team';
+      row.innerHTML=`<div class="sweep"></div><div class="ico">${u.emoji}</div>
+        <div class="mid"><div class="nm">${u.name} <span class="tag">${tag}</span></div><div class="ds">${u.desc}</div></div>
+        <div class="end"><div class="cost rcost">${fmt(u.cost)}</div></div>`;
+      row.addEventListener('click',()=>buyUpgrade(u.id,row));
+      inner.appendChild(row);
+    });
+  }
+  // affordability
+  $$('#upgInner .row[data-up]').forEach(row=>{
+    const u=UMAP[row.dataset.up]; const can=S.v>=u.cost;
+    row.classList.toggle('afford',can);
+    row.querySelector('.rcost').classList.toggle('no',!can);
+  });
+}
+function updateAbilities(){
+  $$('.ab[data-pow]').forEach(d=>{
+    const p=PMAP[d.dataset.pow]; const t=now();
+    const activeUntil=S.powActive[p.id]||0; const ready=S.pow[p.id]||0;
+    const st=d.querySelector('.ab-st'); const fill=d.querySelector('.cdfill');
+    d.classList.remove('ready','active');
+    if(activeUntil>t){
+      d.classList.add('active'); st.className='ab-st a'; st.textContent='ACTIVE · '+Math.ceil((activeUntil-t)/1000)+'s';
+      fill.style.width='100%'; fill.style.background='var(--gold)';
+    } else if(ready>t){
+      st.className='ab-st c'; st.textContent='Cooldown '+Math.ceil((ready-t)/1000)+'s';
+      const total=p.cd*1000*cdMult(); const left=ready-t;
+      fill.style.width=(100*(1-left/total)).toFixed(1)+'%'; fill.style.background='var(--violet)';
+    } else {
+      d.classList.add('ready'); st.className='ab-st r'; st.textContent='READY · tap to use';
+      fill.style.width='0%';
+    }
+  });
+}
+
+/* THREATS panel */
+let threatSig='';
+function renderThreats(){
+  el.threatSub.textContent = S.villains+' defeated';
+  const th=S.threat;
+  const id = th? (th.major?('boss'+th.idx):('minor'+(th.spawnAt||0))) : ('none'+S.storyIndex);
+  if(id!==threatSig || th){ // boss/minor: rebuild structure on change; always refresh hp via update below
+    if(threatSig!==id){
+      threatSig=id;
+      if(!th){
+        const nb = S.storyIndex<BOSSES.length? BOSSES[S.storyIndex]:null;
+        let html='<div class="card boss"><div class="bem">🛰️</div>'+
+          '<div class="bnm" style="color:#cfe0ff">Scanning…</div>'+
+          '<div class="bstory">The streets are calm. Stay ready — the next threat is never far off.</div>';
+        if(nb){ html+='<div class="bkind major" style="margin-top:6px">Next major threat</div>'+
+          `<div class="bstory" style="font-style:normal">⚠️ <b style="color:#ffd0d6">${nb.name}</b> ${nb.emoji} — appears at <b style="color:var(--gold)">${fmt(nb.unlock)}</b> Valor earned.</div>`; }
+        else { html+='<div class="bkind major" style="margin-top:6px">All major villains defeated 🌟</div>'; }
+        html+='</div>';
+        el.threatBody.innerHTML=html;
+      } else {
+        el.threatBody.innerHTML='<div class="card boss">'+
+          `<div class="bem">${th.emoji}</div>`+
+          `<div class="bkind ${th.major?'major':'minor'}">${th.major?'★ Major Villain':'Crime Wave'}</div>`+
+          `<div class="bnm">${th.name}</div>`+
+          (th.intro?`<div class="bstory">${th.intro}</div>`:'')+
+          '<div class="bhp"><div class="bhpfill" id="bhpfill"></div><div class="bhptxt" id="bhptxt"></div></div>'+
+          '<div class="dps">Your team deals <b id="dpsLine">0</b>/s automatically</div>'+
+          '<button class="strike" id="strikeBtn">⚡ STRIKE</button>'+
+          '<div class="brew" id="brewLine"></div>'+
+          '</div>';
+        const sb=$('#strikeBtn'); if(sb) sb.addEventListener('click',strikeThreat);
+      }
+    }
+  }
+  // live update hp
+  if(th){
+    const fill=$('#bhpfill'), txt=$('#bhptxt'), dl=$('#dpsLine'), br=$('#brewLine');
+    if(fill){ fill.style.width=clamp(100*th.hp/th.max,0,100)+'%'; }
+    if(txt){ txt.textContent=fmt(Math.max(0,th.hp))+' / '+fmt(th.max)+' HP'; }
+    if(dl){ dl.textContent=fmt(production()); }
+    if(br){ const sec=th.rewardSec||0; br.innerHTML='Reward: <b>'+fmt(threatReward(th))+'</b> Valor'+(th.major?' · permanent +'+Math.round(th.perma*100)+'% production':''); }
+  }
+}
+function threatReward(th){
+  const sec=th.rewardSec||0;
+  return Math.max(th.major?500:25, production()*sec)*threatRewardMult();
+}
+function strikeThreat(){
+  if(!S.threat) return;
+  const dmg=clickPower()*strikeMult()*3;   // strike hits for 3× a tap
+  damageThreat(dmg, true);
+}
+function damageThreat(dmg, fromTap){
+  const th=S.threat; if(!th) return;
+  th.hp-=dmg;
+  if(fromTap){ const sb=$('#strikeBtn'); if(sb){ sb.style.transform='scale(.94)'; setTimeout(()=>sb&&(sb.style.transform=''),70);} }
+  if(th.hp<=0) defeatThreat();
+}
+function defeatThreat(){
+  const th=S.threat; if(!th) return;
+  const reward=threatReward(th);
+  gainValor(reward);
+  S.villains++;
+  if(th.major){
+    S.permaBonus=(S.permaBonus||0)+th.perma;
+    if(th.idx===S.storyIndex) S.storyIndex++;
+    S.threat=null; S.threatCD=6;
+    fxBurst();
+    refreshTabHints();
+    modal(`<div class="mhead"><div class="me">${th.emoji}</div><div class="mt red">${th.name} Defeated!</div></div>`+
+      `<div class="mbody"><p>${th.win}</p><p style="margin-top:10px">Reward: <span class="big">+${fmt(reward)}</span> Valor</p>`+
+      `<p style="margin-top:6px;color:var(--aqua)">Permanent bonus: <b style="color:var(--aqua)">+${Math.round(th.perma*100)}% production</b> 🛡️</p></div>`+
+      `<div class="mfoot"><button class="btn go" onclick="closeModal()">Claim victory</button></div>`);
+    toast('Villain defeated!', th.name+' is finished. +'+fmt(reward)+' Valor', 'win', '🏆');
+  } else {
+    S.threat=null; S.threatCD=22;
+    toast('Crime stopped', th.name+' foiled. +'+fmt(reward)+' Valor', 'win', '👮');
+  }
+  threatSig=''; checkAch(); save();
+}
+function spawnThreat(){
+  if(S.threat) return;
+  // major boss?
+  if(S.storyIndex<BOSSES.length && S.lifetime>=BOSSES[S.storyIndex].unlock){
+    const b=BOSSES[S.storyIndex];
+    S.threat={major:true, idx:S.storyIndex, name:b.name, emoji:b.emoji, hp:b.hp, max:b.hp,
+      perma:b.perma, rewardSec:b.reward, intro:b.intro, win:b.win, spawnAt:now()};
+    toast('⚠️ A villain appears!', b.name+' '+b.emoji+' is attacking the city.', 'warn', '🚨');
+    refreshTabHints();
+    return;
+  }
+  // minor crime wave (only once threats tab unlocked)
+  if(!tabUnlocked('threats')) return;
+  const prod=production();
+  const hp=Math.max(40, prod*9);
+  const names=['Smash Mob','Neon Bandits','The Pickpockets','Joyride Gang','Blackout Crew','Static Thugs','The Lurkers'];
+  S.threat={major:false, name:names[Math.floor(Math.random()*names.length)], emoji:'🎯',
+    hp:hp, max:hp, rewardSec:38, intro:'A wave of street crime sweeps the district.', spawnAt:now()};
+  refreshTabHints();
+}
+
+/* LEGACY panel */
+function renderLegacy(){
+  const unlocked=canPrestige();
+  const gain=legendGain();
+  let html='';
+  html+='<div class="legacy-hero"><div class="lem">⭐</div><div class="lt">Become a Legend</div>'+
+    `<div class="lhave">You hold <b>${fmt(S.legend)} Legend</b> · +${Math.round(S.legend*3)}% production</div></div>`;
+  if(!unlocked){
+    html+=`<div class="card" style="text-align:center;color:var(--muted);font-size:13px;margin-top:6px">`+
+      `🔒 Retire and inspire a new generation of heroes — resetting for permanent <b style="color:var(--aqua)">Legend</b> bonuses.<br><br>`+
+      `Unlocks at <b style="color:var(--gold)">${fmt(1e6)}</b> lifetime Valor.<br>`+
+      `<span style="color:var(--dim);font-size:11px">(${fmt(S.lifetime)} / ${fmt(1e6)} so far)</span></div>`;
+    el.legacyBody.innerHTML=html;
+    return;
+  }
+  const dis = gain<=0;
+  html+=`<button class="prestige-btn ${dis?'dis':''}" id="prestigeBtn">RETIRE · +${fmt(gain)} ⭐</button>`+
+    `<div class="prestige-sub">Resets Valor, team & upgrades. Keeps Legend, skills, achievements, ranks & villains defeated.</div>`;
+  // skill tree (after first prestige)
+  if(S.prestiges>=1 || S.legend>0){
+    html+='<div class="sectlbl" style="margin-top:18px">Mastery — spend Legend ⭐</div><div class="sk" id="skWrap"></div>';
+  } else {
+    html+='<div class="card" style="margin-top:16px;text-align:center;color:var(--dim);font-size:12px">Your <b style="color:var(--aqua)">Mastery tree</b> unlocks after your first retirement.</div>';
+  }
+  el.legacyBody.innerHTML=html;
+  const pb=$('#prestigeBtn'); if(pb) pb.addEventListener('click',doPrestigePrompt);
+  const sw=$('#skWrap');
+  if(sw){
+    SKILLS.forEach(k=>{
+      const have=!!S.ups[k.id];
+      const reqOk=!k.req || S.ups[k.req];
+      const can=!have && reqOk && S.legend>=k.cost;
+      const node=document.createElement('button');
+      node.className='sknode '+(have?'have':can?'afford':(!reqOk?'lock':''));
+      let costHtml = have? '✓ owned' : (k.cost+' ⭐');
+      let reqNote = (!have&&!reqOk)? `<div class="sds" style="color:var(--red)">Requires: ${SKMAP[k.req].name}</div>`:'';
+      node.innerHTML=`<div class="se">${k.emoji}</div><div class="smid"><div class="snm">${k.name}</div>`+
+        `<div class="sds">${k.desc}</div>${reqNote}</div>`+
+        `<div class="scost ${have?'owned':can?'':'no'}">${costHtml}</div>`;
+      if(can) node.addEventListener('click',()=>buySkill(k.id));
+      sw.appendChild(node);
+    });
+  }
+}
+
+/* ---------------- actions ---------------- */
+function gainValor(n){ S.v+=n; S.earned+=n; S.lifetime+=n; }
+function buyGen(id,row){
+  const g=GMAP[id]; const owned=S.gens[id]||0;
+  let amt = S.buyAmt===-1 ? genMaxAffordable(g,owned,S.v) : S.buyAmt;
+  if(amt<1) return;
+  const cost=genCostTotal(g,owned,amt);
+  if(S.v<cost) return;
+  S.v-=cost; S.gens[id]=owned+amt;
+  flash(row);
+  checkUnlocks(); checkAch(); save();
+}
+function buyUpgrade(id,row){
+  const u=UMAP[id]; if(S.ups[id]) return;
+  if(S.v<u.cost) return;
+  S.v-=u.cost; S.ups[id]=true;
+  flash(row);
+  upgSig=''; // force upgrade list rebuild (item removed)
+  buildPowers();
+  checkAch(); save();
+  if(u.type==='global') toast('Upgrade bought', u.name+' — production boosted.', '', u.emoji);
+}
+function castPower(id){
+  const p=PMAP[id]; const t=now();
+  if((S.pow[id]||0)>t) return;             // cooling down
+  if((S.powActive[id]||0)>t) return;       // already active
+  S._usedPower=true;
+  if(p.kind==='burst'){
+    const amt=production()*p.sec;
+    gainValor(amt);
+    toast(p.name+'!', '+'+fmt(amt)+' Valor banked instantly.', 'win', p.emoji);
+  } else {
+    S.powActive[id]=t+p.dur*1000;
+    toast(p.name+'!', p.desc, '', p.emoji);
+  }
+  S.pow[id]=t + p.cd*1000*cdMult();
+  checkAch(); save();
+}
+function buySkill(id){
+  const k=SKMAP[id]; if(S.ups[id]) return;
+  if(k.req && !S.ups[k.req]) return;
+  if(S.legend<k.cost) return;
+  S.legend-=k.cost; S.ups[id]=true;
+  buildPowers(); renderLegacy(); checkAch(); save();
+  toast('Mastery unlocked', k.name, 'win', k.emoji);
+}
+
+/* tap the medallion */
+let lastFloat=0, lastTapSave=0;
+function doTap(x,y){
+  const cp=clickPower();
+  gainValor(cp);
+  S.clicks++;
+  const med=$('#med'); if(med){ med.classList.remove('punch'); void med.offsetWidth; med.classList.add('punch'); }
+  if(!S.reduceFx){
+    const t=now();
+    if(t-lastFloat>55){ lastFloat=t; floatNum('+'+fmt(cp), x, y); }
+  }
+  if(S.clicks%4===0) pushCrime();
+  checkUnlocks(); checkAch();
+  if(now()-lastTapSave>4000){ lastTapSave=now(); save(); }
+}
+function floatNum(txt,x,y){
+  const w=$('#medwrap'); if(!w) return;
+  const f=document.createElement('div'); f.className='float'; f.textContent=txt;
+  if(x!=null){ const r=w.getBoundingClientRect(); f.style.left=(x-r.left)+'px'; f.style.top=(y-r.top)+'px'; f.style.transform='translateX(-50%)'; }
+  w.appendChild(f); setTimeout(()=>f.remove(),1000);
+}
+function pushCrime(){
+  const c=CRIMES[Math.floor(Math.random()*CRIMES.length)];
+  const s=STREETS[Math.floor(Math.random()*STREETS.length)];
+  const verbs=['stopped','foiled','prevented','shut down','handled'];
+  const v=verbs[Math.floor(Math.random()*verbs.length)];
+  const tk=$('#ticker'); if(tk){ tk.innerHTML=`<b>${c}</b> ${v} at <b>${s}</b>. <span style="color:var(--aqua)">+${fmt(clickPower())}</span>`; }
+}
+
+/* prestige */
+function doPrestigePrompt(){
+  if(!canPrestige()) return;
+  const gain=legendGain();
+  if(gain<=0){ toast('Not yet','Earn more Valor this run for at least 1 Legend.','warn','⭐'); return; }
+  modal(`<div class="mhead"><div class="me">⭐</div><div class="mt aqua">Retire as a Legend?</div></div>`+
+    `<div class="mbody"><p>You'll hang up the cape and inspire a new generation — gaining <span class="big">+${fmt(gain)} Legend</span> for <b>+${gain*3}% permanent production</b>.</p>`+
+    `<p style="margin-top:10px"><b>Reset:</b> Valor, team, and upgrades.<br><b>Kept:</b> Legend, Mastery tree, achievements, rank, and villains defeated.</p></div>`+
+    `<div class="mfoot"><button class="btn ghost" onclick="closeModal()">Not yet</button><button class="btn go" id="confPrestige">Retire (+${fmt(gain)}⭐)</button></div>`);
+  const c=$('#confPrestige'); if(c) c.addEventListener('click',doPrestige);
+}
+function doPrestige(){
+  const gain=legendGain(); if(gain<=0){ closeModal(); return; }
+  S.legend+=gain; S.prestiges++;
+  // reset run
+  S.v=0; S.earned=0; S.gens={}; S.pow={}; S.powActive={}; S.threat=null; S.threatCD=14;
+  // strip non-skill upgrades
+  const keep={}; for(const id in S.ups){ if(id.indexOf('sk_')===0) keep[id]=true; } S.ups=keep;
+  closeModal();
+  threatSig=''; upgSig=''; sig={}; buildAll();
+  toast('A new era begins', '+'+fmt(gain)+' Legend earned. The city remembers you.', 'win', '⭐');
+  checkAch(); save();
+}
+
+/* ---------------- unlocks / tabs / fx ---------------- */
+function flash(row){ row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash'); }
+function refreshTabHints(){
+  $$('.tab').forEach(t=>{
+    const tab=t.dataset.tab; const un=tabUnlocked(tab);
+    t.classList.toggle('locked',!un);
+    let lk=t.querySelector('.lk'); let nd=t.querySelector('.nd');
+    if(!un){ if(!lk){ lk=document.createElement('span'); lk.className='lk'; lk.textContent='🔒'; t.appendChild(lk);} }
+    else if(lk) lk.remove();
+    // red dot on threats when a villain is active
+    const wantDot = un && tab==='threats' && !!S.threat && curTab!=='threats';
+    if(wantDot){ if(!nd){ nd=document.createElement('span'); nd.className='nd'; t.appendChild(nd);} }
+    else if(nd) nd.remove();
+  });
+}
+let prevUnlocked={};
+function checkUnlocks(){
+  for(const tab in TAB_UNLOCK){
+    const un=tabUnlocked(tab);
+    if(un && !S._seenTabs[tab] && TAB_UNLOCK[tab]>0){
+      S._seenTabs[tab]=true;
+      const names={powers:'Powers',threats:'Threats',legacy:'Legacy'};
+      const blurb={powers:'Abilities & upgrades are available.',threats:'Villains now threaten the city — fight back!',legacy:'You can now retire to become a Legend.'};
+      if(names[tab]){
+        toast('New: '+names[tab]+' unlocked!', blurb[tab], 'unlock', '🎉');
+        const tb=$(`.tab[data-tab="${tab}"]`);
+        if(tb){ tb.classList.remove('justunlocked'); void tb.offsetWidth; tb.classList.add('justunlocked'); }
+      }
+      save();
+    }
+  }
+  refreshTabHints();
+}
+function checkAch(){
+  for(const a of ACH){
+    if(!S.ach[a.id] && a.cond(S)){
+      S.ach[a.id]=true;
+      toast('Achievement!', a.emoji+' '+a.name, '', '🏅');
+    }
+  }
+}
+function fxBurst(){
+  if(S.reduceFx) return;
+  const host=$('#burst'); if(!host) return;
+  const words=['POW!','BAM!','WHAM!','BOOM!','KAPOW!','ZAP!'];
+  host.innerHTML=`<div class="burst-word">${words[Math.floor(Math.random()*words.length)]}</div>`;
+  // sparks
+  for(let i=0;i<14;i++){
+    const s=document.createElement('div'); s.className='spark';
+    const ang=Math.random()*Math.PI*2, dist=80+Math.random()*120;
+    s.style.left='50%'; s.style.top='46%';
+    s.style.background=['#ffc83d','#ff4d5e','#4cc2ff','#fff'][i%4];
+    host.appendChild(s);
+    const dx=Math.cos(ang)*dist, dy=Math.sin(ang)*dist;
+    s.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},
+      {transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(0)`,opacity:0}],
+      {duration:600+Math.random()*300,easing:'cubic-bezier(.2,.8,.3,1)'});
+  }
+  host.classList.add('show');
+  setTimeout(()=>{ host.classList.remove('show'); host.innerHTML=''; }, 800);
+}
+
+/* ---------------- toasts / modal ---------------- */
+function toast(title, body, cls, icon){
+  const host=$('#toasts'); if(!host) return;
+  const t=document.createElement('div'); t.className='toast '+(cls||'');
+  t.innerHTML=`<div class="tt">${icon?icon+' ':''}${title}</div>`+(body?`<div class="tb">${body}</div>`:'');
+  host.appendChild(t);
+  setTimeout(()=>t.remove(), 3700);
+  while(host.children.length>3) host.removeChild(host.firstChild);
+}
+function modal(html){ const h=$('#modalHost'); h.innerHTML=`<div class="scrim" id="scrim">${`<div class="modal">${html}</div>`}</div>`; h.classList.add('show');
+  const sc=$('#scrim'); if(sc) sc.addEventListener('click',e=>{ if(e.target===sc && sc.dataset.lock!=='1') closeModal(); }); }
+function modalLocked(html){ modal(html); const sc=$('#scrim'); if(sc) sc.dataset.lock='1'; }
+function closeModal(){ const h=$('#modalHost'); h.classList.remove('show'); h.innerHTML=''; }
+window.closeModal=closeModal;
+
+/* ---------------- game loop + offline ---------------- */
+let teamSig='', powSig='', legacySig='';
+let lastTick=now(), lastSave=now(), hiddenAt=now(), autoBuyTimer=0, chkTimer=0;
+
+function unlockedGenCount(){ let n=0; for(const g of GENS){ if(S.lifetime>=g.unlock||(S.gens[g.id]||0)>0) n++; } return n; }
+
+function awardOffline(sec){
+  const cap=offlineCapHours()*3600;
+  const eff=Math.min(Math.max(0,sec),cap);
+  const prod=production();
+  const gain=prod*eff;
+  if(gain>0){ S.v+=gain; S.earned+=gain; S.lifetime+=gain; }
+  return {gain, eff, capped:sec>cap};
+}
+function autoBuyCheapest(){
+  let best=null,bestCost=Infinity;
+  for(const g of GENS){
+    const owned=S.gens[g.id]||0;
+    if(!(S.lifetime>=g.unlock||owned>0)) continue;
+    const cost=genCostTotal(g,owned,1);
+    if(cost<=S.v && cost<bestCost){ best=g; bestCost=cost; }
+  }
+  if(best){ const owned=S.gens[best.id]||0; S.v-=bestCost; S.gens[best.id]=owned+1; }
+}
+function autoCastPowers(){
+  const t=now();
+  for(const p of POWERS){
+    if(S.lifetime<p.unlock) continue;
+    if((S.pow[p.id]||0)>t || (S.powActive[p.id]||0)>t) continue;
+    S._usedPower=true;
+    if(p.kind==='burst'){ const amt=production()*p.sec; S.v+=amt; S.earned+=amt; S.lifetime+=amt; }
+    else { S.powActive[p.id]=t+p.dur*1000; }
+    S.pow[p.id]=t+p.cd*1000*cdMult();
+  }
+}
+function loop(){
+  const t=now(); let dt=(t-lastTick)/1000; lastTick=t;
+  if(dt<0) dt=0; if(dt>1) dt=1;
+  const prod=production();
+  if(prod>0){ const g=prod*dt; S.v+=g; S.earned+=g; S.lifetime+=g; }
+  if(S.threat){ if(prod>0) damageThreat(prod*dt,false); }
+  else { S.threatCD-=dt; if(S.threatCD<=0){ spawnThreat(); if(!S.threat) S.threatCD=8; } }
+  if(hasFlag('sk_autoteam')){ autoBuyTimer-=dt; if(autoBuyTimer<=0){ autoBuyTimer=2.5; autoBuyCheapest(); } }
+  if(hasFlag('sk_autopow')) autoCastPowers();
+  chkTimer-=dt; if(chkTimer<=0){ chkTimer=1; checkUnlocks(); checkAch(); }
+  renderHUD(); renderActive();
+  if(t-lastSave>8000){ lastSave=t; save(); }
+  requestAnimationFrame(loop);
+}
+function renderActive(){
+  if(curTab==='team'){
+    const ts=unlockedGenCount()+'|'+S.buyAmt;
+    if(ts!==teamSig){ teamSig=ts; buildTeamRows(); }
+    updateTeamRows();
+  } else if(curTab==='powers'){
+    const ps=''+POWERS.filter(p=>S.lifetime>=p.unlock).length;
+    if(ps!==powSig){ powSig=ps; buildPowers(); }
+    updateAbilities(); renderUpgrades();
+  } else if(curTab==='threats'){
+    renderThreats();
+  } else if(curTab==='legacy'){
+    const ls=S.prestiges+'|'+Math.floor(S.legend)+'|'+SKILLS.filter(k=>S.ups[k.id]).length+'|'+(canPrestige()?1:0);
+    if(ls!==legacySig){ legacySig=ls; renderLegacy(); }
+    else { const pb=$('#prestigeBtn'); if(pb){ const g=legendGain(); pb.classList.toggle('dis',g<=0); pb.textContent='RETIRE · +'+fmt(g)+' ⭐'; } }
+  }
+}
+
+/* ---------------- build / tabs ---------------- */
+function buildAll(){
+  teamSig=''; powSig=''; legacySig=''; threatSig=''; upgSig='';
+  buildTeamRows(); buildPowers(); renderThreats(); renderLegacy(); refreshTabHints();
+}
+function switchTab(tab){
+  if(!tabUnlocked(tab)){ toast('Locked', 'Reach '+fmt(TAB_UNLOCK[tab])+' Valor earned first.', 'warn', '🔒'); return; }
+  curTab=tab;
+  $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.tab===tab));
+  $$('.panel').forEach(p=>p.classList.toggle('on',p.dataset.panel===tab));
+  if(tab==='team') teamSig='';
+  if(tab==='powers') powSig='';
+  if(tab==='legacy') legacySig='';
+  if(tab==='threats') threatSig='';
+  refreshTabHints();
+}
+
+/* ---------------- achievements / settings modals ---------------- */
+function openAch(){
+  let cells='';
+  for(const a of ACH){ const got=S.ach[a.id]; cells+=`<div class="ach ${got?'got':''}"><div class="ae">${got?a.emoji:'❔'}</div><div class="an">${got?a.name:'???'}</div></div>`; }
+  modal(`<div class="mhead"><div class="me">🏆</div><div class="mt gold">Achievements</div></div>`+
+    `<div class="mbody"><p style="text-align:center;margin-bottom:12px">${achCount()} / ${ACH.length} unlocked · each grants <b>+1% production</b></p><div class="achgrid">${cells}</div></div>`+
+    `<div class="mfoot"><button class="btn primary" onclick="closeModal()">Close</button></div>`);
+}
+function openSettings(){
+  let saveStr=''; try{ saveStr=localStorage.getItem(SAVEKEY)||''; }catch(e){}
+  modal(`<div class="mhead"><div class="me">⚙️</div><div class="mt">Settings</div></div>`+
+    `<div class="mbody">`+
+      `<div class="setrow"><div><div class="sk">Reduce effects</div><div class="sv">Fewer animations & screen bursts</div></div><div class="toggle ${S.reduceFx?'on':''}" id="tgFx"><i></i></div></div>`+
+      `<div class="setrow" style="display:block"><div class="sk" style="margin-bottom:6px">Backup / transfer save</div>`+
+        `<textarea class="imparea" id="saveBox" spellcheck="false">${saveStr}</textarea>`+
+        `<div style="display:flex;gap:8px;margin-top:8px"><button class="minibtn" id="btnCopy">📋 Copy</button><button class="minibtn" id="btnImport">📥 Load from box</button></div>`+
+        `<div class="sv" style="margin-top:6px">Paste this code on another device to move your save.</div></div>`+
+      `<div class="setrow"><div><div class="sk">Your record</div><div class="sv">Retirements ${S.prestiges} · Villains ${S.villains} · Taps ${fmt(S.clicks)}</div></div></div>`+
+      `<div class="setrow"><div><div class="sk" style="color:var(--red)">Erase everything</div><div class="sv">Permanent — no undo</div></div><button class="minibtn danger" id="btnWipe">Reset</button></div>`+
+    `</div>`+
+    `<div class="mfoot"><button class="btn primary" onclick="closeModal()">Done</button></div>`);
+  const fx=$('#tgFx'); if(fx) fx.addEventListener('click',function(){ S.reduceFx=!S.reduceFx; this.classList.toggle('on',S.reduceFx); save(); });
+  const cp=$('#btnCopy'); if(cp) cp.addEventListener('click',()=>{ const b=$('#saveBox'); b.select();
+    try{ if(navigator.clipboard) navigator.clipboard.writeText(b.value); else document.execCommand('copy'); }catch(e){}
+    toast('Copied','Save code is on your clipboard.','', '📋'); });
+  const im=$('#btnImport'); if(im) im.addEventListener('click',()=>{
+    const v=$('#saveBox').value.trim(); if(!v) return;
+    try{ let txt; try{ txt=decodeURIComponent(escape(atob(v))); }catch(e){ txt=v; } JSON.parse(txt);
+      localStorage.setItem(SAVEKEY, v.charAt(0)==='{' ? btoa(unescape(encodeURIComponent(v))) : v);
+      toast('Save loaded','Reloading…','win','📥'); setTimeout(()=>location.reload(),700);
+    }catch(e){ toast('Invalid code','That save could not be read.','warn','⚠️'); }
+  });
+  const wp=$('#btnWipe'); if(wp) wp.addEventListener('click',()=>{
+    modal(`<div class="mhead"><div class="me">⚠️</div><div class="mt red">Erase everything?</div></div>`+
+      `<div class="mbody"><p>This permanently deletes your hero, all progress, Legend, and achievements. There is no undo.</p></div>`+
+      `<div class="mfoot"><button class="btn ghost" onclick="closeModal()">Keep playing</button><button class="btn danger" id="confWipe">Erase it all</button></div>`);
+    const c=$('#confWipe'); if(c) c.addEventListener('click',()=>{ try{ localStorage.removeItem(SAVEKEY); }catch(e){} location.reload(); });
+  });
+}
+
+/* ---------------- new game ---------------- */
+function defaultHeroName(){
+  const a=['Night','Iron','Star','Aqua','Storm','Solar','Shadow','Volt','Astro','Crimson','Lunar','Titan'];
+  const b=['guard','wing','blade','hawk','fist','spark','warden','sentinel','strike','bolt','watch','flare'];
+  return a[Math.floor(Math.random()*a.length)]+b[Math.floor(Math.random()*b.length)];
+}
+function newGameFlow(){
+  let sel=null;
+  const cards=ORIGINS.map(o=>`<button class="orig" data-o="${o.id}"><div class="oe">${o.emoji}</div><div class="on">${o.name}</div><div class="of">${o.fx}</div></button>`).join('');
+  modalLocked(`<div class="mhead"><div class="me">🦸</div><div class="mt blue">Begin Your Legend</div></div>`+
+    `<div class="mbody"><p style="text-align:center">Name your hero and pick an origin — it shapes your strengths for the whole run.</p>`+
+    `<input class="namein" id="heroNameIn" maxlength="18" placeholder="Name your hero…">`+
+    `<div class="origins">${cards}</div>`+
+    `<p id="originFx" style="text-align:center;color:var(--muted);min-height:34px;margin-top:6px;font-size:12px"></p></div>`+
+    `<div class="mfoot"><button class="btn primary" id="startBtn" style="opacity:.55">Choose an origin</button></div>`);
+  const fxEl=$('#originFx'), startBtn=$('#startBtn');
+  $$('.orig').forEach(c=>c.addEventListener('click',()=>{
+    sel=c.dataset.o; $$('.orig').forEach(x=>x.classList.toggle('sel',x===c));
+    const o=ORIGINS.find(z=>z.id===sel); fxEl.innerHTML=`<b style="color:var(--text)">${o.name}</b> — ${o.blurb}`;
+    startBtn.style.opacity='1'; startBtn.textContent='Start as '+o.name+' →';
+  }));
+  startBtn.addEventListener('click',()=>{
+    if(!sel){ toast('Pick an origin','Tap one of the four cards to begin.','warn','👆'); return; }
+    S.origin=sel; const nm=($('#heroNameIn').value||'').trim().slice(0,18); S.name=nm||defaultHeroName();
+    S.created=now(); S.t=now();
+    closeModal(); buildAll(); switchTab('city'); save();
+    toast('Welcome, '+S.name+'!','Tap the medallion to fight crime and earn Valor.','win','🦸');
+  });
+}
+
+/* ---------------- init ---------------- */
+function buildManifest(){
+  try{
+    const m={ name:'Cape City — Idle Hero', short_name:'Cape City',
+      description:'Idle superhero game: fight crime, build a team, master powers, defeat villains, become a legend.',
+      start_url:'.', scope:'.', display:'standalone', orientation:'portrait',
+      background_color:'#0a0e1a', theme_color:'#0a0e1a', categories:['games','entertainment'],
+      icons:[ {src:IC.i192,sizes:'192x192',type:'image/png',purpose:'any'},
+              {src:IC.i512,sizes:'512x512',type:'image/png',purpose:'any'},
+              {src:IC.mask,sizes:'512x512',type:'image/png',purpose:'maskable'} ] };
+    const blob=new Blob([JSON.stringify(m)],{type:'application/manifest+json'});
+    const l=document.createElement('link'); l.rel='manifest'; l.href=URL.createObjectURL(blob); document.head.appendChild(l);
+  }catch(e){}
+}
+function makeStars(){
+  const host=$('#stars'); if(!host) return; let h='';
+  for(let i=0;i<42;i++){
+    const x=(Math.random()*100).toFixed(2), y=(Math.random()*60).toFixed(2);
+    const d=(2+Math.random()*3).toFixed(2), delay=(Math.random()*3).toFixed(2), sc=(Math.random()*1.4+0.5).toFixed(2);
+    h+=`<i style="left:${x}%;top:${y}%;animation-duration:${d}s;animation-delay:${delay}s;transform:scale(${sc})"></i>`;
+  }
+  host.innerHTML=h;
+}
+const HERO_EMOJI=['🦸','🦸‍♀️','🦹','🥷','🦾'];
+function init(){
+  cacheEls(); makeStars();
+  $('#medEm').textContent=HERO_EMOJI[Math.floor(Math.random()*HERO_EMOJI.length)];
+
+  // tab wiring
+  $$('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
+  // buy toggle
+  $$('#buytog button').forEach(b=>b.addEventListener('click',()=>{
+    S.buyAmt=parseInt(b.dataset.amt,10);
+    $$('#buytog button').forEach(x=>x.classList.toggle('on',x===b)); teamSig='';
+  }));
+  // header
+  $('#btnAch').addEventListener('click',openAch);
+  $('#btnSet').addEventListener('click',openSettings);
+  // medallion tap
+  const med=$('#med');
+  med.addEventListener('pointerdown',e=>{ e.preventDefault(); doTap(e.clientX,e.clientY); });
+
+  const had=load();
+  // reflect buy toggle state
+  $$('#buytog button').forEach(x=>x.classList.toggle('on', parseInt(x.dataset.amt,10)===S.buyAmt));
+
+  if(!had || !S.origin){
+    buildAll(); newGameFlow();
+  } else {
+    const away=(now()-(S.t||now()))/1000;
+    buildAll();
+    if(away>60){ const r=awardOffline(away); if(r.gain>0){
+      modal(`<div class="mhead"><div class="me">🌙</div><div class="mt blue">While You Were Away</div></div>`+
+        `<div class="mbody"><p>Your team protected the city for <b>${fmtTime(away)}</b>${r.capped?` <span style="color:var(--dim)">(capped at ${offlineCapHours()}h)</span>`:''}.</p>`+
+        `<p style="margin-top:12px;text-align:center">You earned <span class="big">+${fmt(r.gain)}</span> Valor 💰</p></div>`+
+        `<div class="mfoot"><button class="btn primary" onclick="closeModal()">Welcome back</button></div>`);
+    } } else { awardOffline(away); }
+    switchTab('city');
+  }
+
+  lastTick=now(); lastSave=now();
+  requestAnimationFrame(loop);
+
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){ save(); hiddenAt=now(); }
+    else { const a=(now()-hiddenAt)/1000; if(a>1) awardOffline(a); lastTick=now(); }
+  });
+  window.addEventListener('pagehide',save);
+  window.addEventListener('beforeunload',save);
+  window.addEventListener('blur',save);
+  document.addEventListener('freeze',save);
+}
+
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+else init();
+</script>
+</body>
+</html>
