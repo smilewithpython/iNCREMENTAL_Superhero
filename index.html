@@ -446,6 +446,45 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .cotag.risk{background:rgba(255,92,108,.15);color:var(--red)}
 .cotag.safe{background:rgba(76,194,255,.14);color:var(--blue)}
 
+/* ---------- living city ambient fx ---------- */
+#cityfx{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.searchlight{position:absolute;bottom:54px;width:7px;height:260px;transform-origin:bottom center;border-radius:50%;
+  background:linear-gradient(to top, rgba(120,180,255,.20), rgba(120,180,255,.04) 60%, transparent);filter:blur(2.5px);opacity:.55;animation:sweep 8s ease-in-out infinite}
+@keyframes sweep{0%,100%{transform:rotate(-34deg)}50%{transform:rotate(30deg)}}
+.aircraft{position:absolute;will-change:transform;font-size:13px;opacity:.8;filter:drop-shadow(0 0 2px #000)}
+.aircraft .blink{position:absolute;right:-1px;top:5px;width:3px;height:3px;border-radius:50%;background:#ff4d5e;box-shadow:0 0 5px #ff4d5e;animation:acblink .9s steps(1,end) infinite}
+@keyframes acblink{0%,55%{opacity:1}56%,100%{opacity:0}}
+.shootstar{position:absolute;width:64px;height:2px;border-radius:2px;background:linear-gradient(to right, transparent, #cfe0ff, #fff);will-change:transform,opacity;opacity:0}
+.win-tw{animation:winFlick 4.5s steps(1,end) infinite}
+@keyframes winFlick{0%,44%{opacity:.55}45%,57%{opacity:.10}58%,100%{opacity:.55}}
+/* hero idle motion (medallion only) */
+#medEm .hcape{transform-box:fill-box;transform-origin:50% 6%;animation:capeSway 3.4s ease-in-out infinite}
+@keyframes capeSway{0%,100%{transform:rotate(-1.4deg)}50%{transform:rotate(1.8deg)}}
+#medEm .heye{transform-box:fill-box;transform-origin:center;animation:heroBlink 5.6s ease-in-out infinite}
+@keyframes heroBlink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+
+/* ---------- mystery cache ---------- */
+.surge.cache{width:82px;height:82px;box-shadow:0 0 0 2px var(--sc,#ffd54a), 0 0 34px var(--sc,#ffd54a), 0 8px 24px rgba(0,0,0,.6)}
+.surge.cache .se{font-size:40px}
+.surge.cache .sring{animation-duration:1.05s}
+.crate-reveal{font-size:74px;text-align:center;margin:10px 0 4px}
+.crate-shake{animation:crateShake .7s ease}
+@keyframes crateShake{0%,100%{transform:rotate(0) scale(1)}15%{transform:rotate(-13deg)}30%{transform:rotate(11deg)}45%{transform:rotate(-9deg) scale(1.05)}60%{transform:rotate(7deg)}80%{transform:rotate(-4deg)}}
+.reward-pop{animation:rewardPop .42s cubic-bezier(.3,1.4,.5,1)}
+@keyframes rewardPop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+.rew-name{font-weight:900;font-size:20px;text-align:center;margin-top:4px}
+.rew-sub{font-size:13px;color:var(--muted);text-align:center;margin-top:3px}
+
+/* ---------- confetti + rank-up ---------- */
+.confetti{position:fixed;top:-14px;width:9px;height:14px;border-radius:2px;z-index:60;pointer-events:none;will-change:transform,opacity}
+.rankup-banner{position:fixed;top:118px;left:50%;z-index:61;pointer-events:none;min-width:220px;
+  background:linear-gradient(180deg,#1c2c52,#0e1830);border:1.5px solid var(--rkc,#ffd54a);border-radius:16px;padding:12px 22px;text-align:center;
+  box-shadow:0 14px 44px rgba(0,0,0,.6), 0 0 30px var(--rkc,#ffd54a);animation:rankPop 2s ease forwards}
+.rankup-banner .ru1{font-family:var(--display);font-size:13px;letter-spacing:3px;color:var(--gold)}
+.rankup-banner .ru2{font-weight:900;font-size:21px;margin-top:2px;color:#fff}
+.rankup-banner .ru0{font-size:30px}
+@keyframes rankPop{0%{transform:translate(-50%,-16px) scale(.9);opacity:0}10%{transform:translate(-50%,0) scale(1);opacity:1}82%{opacity:1}100%{transform:translate(-50%,-12px) scale(1);opacity:0}}
+
 @media (max-width:360px){ #tabs .tl{font-size:8.5px} .sico{font-size:27px} }
 @media (prefers-reduced-motion: reduce){
   .med-ring,.med-glow,.stars i,.boss .bem,.burst-word{animation:none!important}
@@ -478,7 +517,24 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
       <rect x="166" y="74" width="4" height="5"/><rect x="174" y="86" width="4" height="5"/>
       <rect x="326" y="72" width="4" height="5"/><rect x="334" y="86" width="4" height="5"/>
     </g>
+    <g fill="#ffd98a">
+      <rect class="win-tw" style="animation-delay:.1s" x="86" y="82" width="4" height="5"/>
+      <rect class="win-tw" style="animation-delay:.9s" x="94" y="92" width="4" height="5"/>
+      <rect class="win-tw" style="animation-delay:1.7s" x="166" y="94" width="4" height="5"/>
+      <rect class="win-tw" style="animation-delay:.5s" x="220" y="66" width="4" height="5"/>
+      <rect class="win-tw" style="animation-delay:2.3s" x="228" y="82" width="4" height="5"/>
+      <rect class="win-tw" style="animation-delay:1.3s" x="326" y="92" width="4" height="5"/>
+      <rect class="win-tw" style="animation-delay:.7s" x="38" y="86" width="4" height="5"/>
+      <rect class="win-tw" style="animation-delay:2.0s" x="270" y="88" width="4" height="5"/>
+      <rect class="win-tw" style="animation-delay:1.5s" x="378" y="96" width="4" height="5"/>
+      <rect class="win-tw" style="animation-delay:.3s" x="212" y="58" width="4" height="5"/>
+    </g>
   </svg>
+  <div id="cityfx">
+    <div class="searchlight" style="left:14%;animation-delay:0s;animation-duration:8s"></div>
+    <div class="searchlight" style="left:52%;animation-delay:2.4s;animation-duration:9.5s"></div>
+    <div class="searchlight" style="left:84%;animation-delay:1.2s;animation-duration:7s"></div>
+  </div>
 
   <header id="hud">
     <button class="hicon" id="btnAch" aria-label="Achievements">🏆</button>
@@ -642,7 +698,7 @@ function heroSVG(o){
     frontHair=`<path d="M31,44 Q28,17 50,16 Q72,17 69,44 Q63,29 50,29 Q37,29 31,44 Z" fill="${hair}"/><path d="M31,44 Q33,33 40,30 Q36,36 36,44 Z" fill="${hairHi}" opacity=".5"/>`;
   } else { frontHair=`<ellipse cx="44" cy="28" rx="7" ry="4" fill="#ffffff" opacity=".10"/>`; }
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">`+
-    `<path d="M50,54 L${86+sw},76 Q${88+sw},101 66,102 L34,102 Q${12-sw},101 ${14-sw},76 Z" fill="${cape}"/>`+
+    `<path class="hcape" d="M50,54 L${86+sw},76 Q${88+sw},101 66,102 L34,102 Q${12-sw},101 ${14-sw},76 Z" fill="${cape}"/>`+
     `<path d="M50,58 L${78+sw},77 Q${81+sw},101 62,102 L38,102 Q${19-sw},101 ${22-sw},77 Z" fill="${suit}"/>`+
     `<path d="M50,58 L${78+sw},77 Q${81+sw},101 62,102 L50,102 Z" fill="${suitHi}" opacity=".25"/>`+
     `<path d="M50,74 l3,6 6.5,.6 -5,4.4 1.6,6.4 -6.1,-3.5 -6.1,3.5 1.6,-6.4 -5,-4.4 6.5,-.6 Z" fill="#ffd54a"/>`+
@@ -653,7 +709,7 @@ function heroSVG(o){
     `<path d="M34,48 Q50,62 66,48 Q60,58 50,59 Q40,58 34,48 Z" fill="${skinSh}" opacity=".35"/>`+
     frontHair+
     `<path d="M30,41 Q29,35 37,35 Q44,35 47,38 Q50,40 53,38 Q56,35 63,35 Q71,35 70,41 Q69,48 59,47 Q52,46 51,42 Q50,41 49,42 Q48,46 41,47 Q31,48 30,41 Z" fill="${mask}"/>`+
-    `<path d="M35,40 Q39,37 44,40 Q40,44 35,42 Z" fill="#fff"/><path d="M65,40 Q61,37 56,40 Q60,44 65,42 Z" fill="#fff"/>`+
+    `<path class="heye" d="M35,40 Q39,37 44,40 Q40,44 35,42 Z" fill="#fff"/><path class="heye" d="M65,40 Q61,37 56,40 Q60,44 65,42 Z" fill="#fff"/>`+
     `</svg>`;
 }
 function heroOpts(){ return {sex:S.sex, skin:S.skin, hair:S.hairColor, style:S.hairStyle, suit:suitColor()}; }
@@ -793,12 +849,18 @@ const ACH=[
   {id:'a_overdrive',emoji:'🔴',name:'Redline',      cond:s=>s._overdrive},
   {id:'a_crisis1',emoji:'🚨', name:'On the Scene',  cond:s=>(s.crises||0)>=1},
   {id:'a_crisis15',emoji:'🎖️',name:'Crisis Veteran',cond:s=>(s.crises||0)>=15},
+  {id:'a_cache1', emoji:'🎁', name:'Lucky Find',    cond:s=>(s.caches||0)>=1},
+  {id:'a_cache15',emoji:'🎰', name:'Treasure Hunter',cond:s=>(s.caches||0)>=15},
+  {id:'a_rankmax',emoji:'🌌', name:'Cosmic Guardian',cond:s=>rankIdx()>=RANKS.length-1},
 ];
 
 const CRIMES=['Mugging','Carjacking','Bank alarm','Purse snatch','Arson attempt','Hostage scare','Jewel heist',
-  'Hit-and-run','Smash-and-grab','Subway brawl','Rooftop chase','Bomb threat','Kidnapping','Cat stuck in tree'];
+  'Hit-and-run','Smash-and-grab','Subway brawl','Rooftop chase','Bomb threat','Kidnapping','Cat stuck in tree',
+  'Armored truck hit','Gang standoff','Drone smuggling','Warehouse break-in','Pickpocket ring','Vandalism spree',
+  'Yacht robbery','ATM skimming','Joyride pursuit','Counterfeit bust','Casino con','Blackmail drop'];
 const STREETS=['5th & Vine','Dockside','Old Town','Neon Plaza','Harbor Row','West End','Steel Bridge','Granite Park',
-  'Midtown','The Heights','Cobalt St.','Aurora Ave.','Riverside','Lowtown'];
+  'Midtown','The Heights','Cobalt St.','Aurora Ave.','Riverside','Lowtown',
+  'Crimson Wharf','Tower District','Irongate','Sable Park','Lumen Square','Echo Alley','Vesper Heights','Kessler Pier'];
 
 /* ---------------- state ---------------- */
 let S=null;
@@ -810,7 +872,7 @@ function defaultState(){
     threat:null, threatCD:18, permaBonus:0,
     ach:{}, origin:null, name:'', buyAmt:1,
     autoTap:false, sex:null, outfit:0, skin:'#d99a6c', hairColor:'#4a3526', hairStyle:'short',
-    buffs:{}, surgeCD:80, crisisCD:200, autoSurge:false, surges:0, crises:0,
+    buffs:{}, surgeCD:80, crisisCD:200, autoSurge:false, surges:0, crises:0, caches:0, cacheCD:300,
     muted:false, reduceFx:false,
     t:now(), created:now(),
     _usedPower:false, _seenTabs:{},
@@ -1187,6 +1249,8 @@ function defeatThreat(){
     S.threat=null; S.threatCD=22;
     toast('Crime stopped', th.name+' foiled. +'+fmt(reward)+' Valor', 'win', '👮');
   }
+  const dropChance = th.major?0.6:0.12;
+  if(S.lifetime>=2000 && Math.random()<dropChance){ S.cacheCD=Math.min(S.cacheCD, rrand(2,6)); }
   threatSig=''; checkAch(); save();
 }
 function spawnThreat(){
@@ -1551,6 +1615,113 @@ function renderBuffs(){
   keys.forEach(k=>{ const c=bar.querySelector(`[data-bt="${k}"]`); if(c) c.textContent=Math.ceil((S.buffs[k]-t)/1000)+'s'; });
 }
 
+/* ---------------- living-city ambient fx ---------------- */
+let acCD=rrand(5,11), ssCD=rrand(4,9);
+function reducedMotion(){ return S.reduceFx || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+function cityfxTick(dt){
+  if(reducedMotion() || document.hidden) return;
+  const layer=$('#cityfx'); if(!layer) return;
+  acCD-=dt; if(acCD<=0){ acCD=rrand(15,28); spawnAircraft(layer); }
+  ssCD-=dt; if(ssCD<=0){ ssCD=rrand(7,15); spawnShootStar(layer); }
+}
+function spawnAircraft(layer){
+  if(layer.querySelectorAll('.aircraft').length>1) return;
+  const ltr=Math.random()<0.5; const y=Math.round(rrand(40,150));
+  const node=document.createElement('div'); node.className='aircraft'; node.style.top=y+'px';
+  node.innerHTML=(ltr?'🛩️':'🚁')+'<span class="blink"></span>';
+  layer.appendChild(node);
+  const W=window.innerWidth||400; const dur=rrand(9000,14000);
+  const flip=ltr?'':' scaleX(-1)'; const from=ltr?-40:W+40, to=ltr?W+40:-40;
+  let a; try{ a=node.animate([{transform:`translateX(${from}px)`+flip},{transform:`translateX(${to}px)`+flip}],{duration:dur,easing:'linear'}); a.onfinish=()=>node.remove(); }
+  catch(e){ setTimeout(()=>node.remove(),dur); }
+}
+function spawnShootStar(layer){
+  const x=Math.round(rrand(0.2,0.95)*(window.innerWidth||400)); const y=Math.round(rrand(10,90));
+  const node=document.createElement('div'); node.className='shootstar'; node.style.left=x+'px'; node.style.top=y+'px';
+  layer.appendChild(node);
+  try{ node.animate([{transform:'rotate(22deg) translateX(24px)',opacity:0},{opacity:1,offset:.18},{transform:'rotate(22deg) translateX(-150px)',opacity:0}],{duration:760,easing:'ease-in'}); }catch(e){}
+  setTimeout(()=>{ if(node.parentNode) node.remove(); }, 820);
+}
+
+/* ---------------- mystery cache ---------------- */
+const CACHE_REWARDS=[{id:'valor',w:40},{id:'buff',w:26},{id:'legend',w:16},{id:'recharge',w:8},{id:'jackpot',w:10}];
+function pickCacheReward(){ let tot=0; for(const r of CACHE_REWARDS) tot+=r.w; let x=Math.random()*tot; for(const r of CACHE_REWARDS){ x-=r.w; if(x<=0) return r.id; } return 'valor'; }
+function rollCache(){
+  const id=pickCacheReward();
+  if(id==='valor'){ const a=Math.max(production()*1800,S.v*0.25,100); return {id,amt:a,icon:'💰',name:'Valor Cache',sub:'+'+fmt(a)+' Valor'}; }
+  if(id==='jackpot'){ const a=Math.max(production()*7200,S.v*1.5,1000); return {id,amt:a,icon:'🎰',name:'JACKPOT!',sub:'+'+fmt(a)+' Valor'}; }
+  if(id==='recharge'){ const a=Math.max(production()*120,50); return {id,amt:a,icon:'🔋',name:'Full Recharge',sub:'Cooldowns reset · +'+fmt(a)+' Valor'}; }
+  if(id==='legend'){ const sh=1+Math.floor(Math.random()*3); return {id,amt:sh,icon:'⭐',name:'Legend Shards',sub:'+'+sh+' Legend (no prestige!)'}; }
+  const keys=['frenzy','overdrive','tapstorm','fame']; const k=keys[Math.floor(Math.random()*keys.length)]; const b=BUFFS[k];
+  return {id:'buff',buff:k,icon:b.icon,name:b.name,sub:(b.prod?('×'+b.prod+' production'):('×'+b.click+' tap power'))+' · '+b.dur+'s'};
+}
+function grantCache(rw){
+  if(rw.id==='valor'||rw.id==='jackpot') gainValor(rw.amt);
+  else if(rw.id==='recharge'){ for(const id in S.pow) S.pow[id]=0; gainValor(rw.amt); }
+  else if(rw.id==='legend'){ S.legend+=rw.amt; legacySig=''; }
+  else if(rw.id==='buff'){ addBuff(rw.buff); }
+  S.caches=(S.caches||0)+1; checkAch(); save();
+}
+let cacheOnScreen=false;
+function spawnCache(){
+  if(modalOpen()||cacheOnScreen) return;
+  const layer=$('#evlayer'); if(!layer) return; cacheOnScreen=true;
+  const node=document.createElement('button'); node.className='surge cache'; node.style.setProperty('--sc','#ffd54a');
+  node.style.top=Math.round(rrand(0.2,0.5)*(window.innerHeight||700))+'px';
+  node.innerHTML='<span class="sring"></span><span class="se">🎁</span><span class="slabel">Mystery Cache</span>';
+  layer.appendChild(node);
+  const W=window.innerWidth||400; const dur=reducedMotion()?9000:13000; let anim=null, done=false;
+  const cleanup=()=>{ cacheOnScreen=false; if(node.parentNode) node.remove(); };
+  const open=()=>{ if(done) return; done=true; if(anim) try{anim.cancel();}catch(e){}
+    const r=node.getBoundingClientRect(); fxSpark(r.left+r.width/2,r.top+r.height/2,'#ffd54a'); cleanup();
+    const rw=rollCache();
+    if(autoSurgeOn()){ grantCache(rw); toast('Mystery Cache', rw.name+' — '+rw.sub, 'win', rw.icon); }
+    else openCacheReveal(rw);
+  };
+  node.addEventListener('click', open);
+  try{ anim=node.animate([{transform:`translateX(${W+80}px)`},{transform:'translateX(-100px)'}],{duration:dur,easing:'linear'}); anim.onfinish=()=>{ if(!done) cleanup(); }; }
+  catch(e){ setTimeout(()=>{ if(!done) cleanup(); }, dur); }
+  if(autoSurgeOn()) setTimeout(()=>{ if(!done) open(); }, 800);
+}
+function openCacheReveal(rw){
+  modal(`<div class="mhead"><div class="mt gold">Mystery Cache</div></div>`+
+    `<div class="mbody"><div class="crate-reveal crate-shake" id="crateEm">🎁</div><p style="text-align:center;color:var(--muted)" id="crateHint">Opening…</p></div>`+
+    `<div class="mfoot"><button class="btn primary" id="crateClaim" style="opacity:.55">…</button></div>`);
+  grantCache(rw);
+  setTimeout(()=>{
+    const em=$('#crateEm'); if(em){ em.classList.remove('crate-shake'); em.classList.add('reward-pop'); em.textContent=rw.icon; }
+    const h=$('#crateHint'); if(h){ h.innerHTML=`<span class="rew-name reward-pop">${rw.name}</span><span class="rew-sub">${rw.sub}</span>`; h.style.color='var(--text)'; }
+    const b=$('#crateClaim'); if(b){ b.style.opacity='1'; b.textContent='Claim'; b.onclick=closeModal; }
+    if(!S.reduceFx) confetti(18);
+  }, 720);
+}
+
+/* ---------------- rank-up celebration + confetti ---------------- */
+let lastRankShown=-1;
+function confetti(n){
+  if(S.reduceFx) return; const host=$('#burst')||document.body; const W=window.innerWidth||400, H=window.innerHeight||700;
+  const cols=['#ffc83d','#ff4d5e','#4cc2ff','#46e5b7','#9b6bff','#fff'];
+  for(let i=0;i<n;i++){ const c=document.createElement('div'); c.className='confetti';
+    c.style.left=Math.round(rrand(0,W))+'px'; c.style.background=cols[i%cols.length];
+    host.appendChild(c);
+    const dx=rrand(-60,60), rot=rrand(180,720), dur=rrand(1400,2400);
+    try{ c.animate([{transform:'translate(0,0) rotate(0)',opacity:1},{transform:`translate(${dx}px, ${H+40}px) rotate(${rot}deg)`,opacity:.9}],{duration:dur,easing:'cubic-bezier(.3,.6,.5,1)'}); }catch(e){}
+    setTimeout(()=>{ if(c.parentNode) c.remove(); }, dur+80);
+  }
+}
+function celebrateRank(r){
+  const layer=$('#evlayer')||document.body;
+  const b=document.createElement('div'); b.className='rankup-banner'; b.style.setProperty('--rkc', r.accent||'#ffd54a');
+  b.innerHTML=`<div class="ru0">${r.emoji}</div><div class="ru1">RANK UP</div><div class="ru2">${r.name}</div>`;
+  layer.appendChild(b); setTimeout(()=>{ if(b.parentNode) b.remove(); }, 2100);
+  confetti(26); toast('Rank up!', 'You are now '+r.name+'.', 'win', r.emoji);
+}
+function checkRankUp(){
+  const idx=rankIdx();
+  if(lastRankShown<0){ lastRankShown=idx; return; }
+  if(idx>lastRankShown){ lastRankShown=idx; celebrateRank(RANKS[idx]); }
+}
+
 /* ---------------- appearance ---------------- */
 function applyAppearance(){
   document.documentElement.style.setProperty('--suit', suitColor());
@@ -1699,9 +1870,11 @@ function loop(){
   pruneBuffs();
   if(S.lifetime>=150){ S.surgeCD-=dt; if(S.surgeCD<=0){ S.surgeCD=rrand(115,165); spawnSurge(); } }
   if(S.lifetime>=800){ S.crisisCD-=dt; if(S.crisisCD<=0){ S.crisisCD=rrand(240,360); spawnCrisis(); } }
+  if(S.lifetime>=2000){ S.cacheCD-=dt; if(S.cacheCD<=0){ S.cacheCD=rrand(240,420); spawnCache(); } }
+  cityfxTick(dt);
   if(hasFlag('sk_autoteam')){ autoBuyTimer-=dt; if(autoBuyTimer<=0){ autoBuyTimer=2.5; autoBuyCheapest(); } }
   if(hasFlag('sk_autopow')) autoCastPowers();
-  chkTimer-=dt; if(chkTimer<=0){ chkTimer=1; checkUnlocks(); checkAch(); }
+  chkTimer-=dt; if(chkTimer<=0){ chkTimer=1; checkUnlocks(); checkAch(); checkRankUp(); }
   renderHUD(); renderActive(dt);
   if(t-lastSave>8000){ lastSave=t; save(); }
   requestAnimationFrame(loop);

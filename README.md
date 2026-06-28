@@ -92,6 +92,14 @@ This was built to be safe to close at any time:
   bank heist for a huge payout but take a beating, or set a trap and play it safe; go
   public for a fame boost or stay in the shadows. Your call shapes the reward — and a
   couple of choices grant temporary buffs you'll see tick down up top.
+- **Mystery Caches** 🎁 — rare loot crates drift by now and then (and often drop when you
+  beat a villain). Tap to open one for a suspenseful reveal and a random reward: a Valor
+  cache, a random buff, a full **Recharge**, **Legend Shards** (prestige currency without
+  prestiging!), or a rare **Jackpot**. Auto-collect picks these up too.
+- The city is **alive**: searchlights sweep the skyline, aircraft blink past, stars shoot
+  overhead, windows flicker, and your hero breathes and blinks on the medallion. Hit a new
+  **Rank** and you'll get a confetti celebration. (All of this respects **Reduce effects**
+  and your device's reduced-motion setting.)
 - The 🏆 button tracks **achievements** (each adds +1% production forever).
 
 Have fun, and go become a legend. ✊
