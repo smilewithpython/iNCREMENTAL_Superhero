@@ -139,7 +139,8 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .med:active{transform:scale(.94)}
 .med.punch{animation:punch .18s ease}
 @keyframes punch{0%{transform:scale(.9)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
-.med .em{font-size:74px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5))}
+.med .em{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:120px;height:120px;display:block;filter:drop-shadow(0 5px 12px rgba(0,0,0,.5))}
+.med .em svg{width:100%;height:100%;display:block}
 .med .cap{position:absolute;bottom:24px;font-family:var(--display);font-size:15px;letter-spacing:1px;color:var(--gold);text-shadow:0 1px 4px rgba(0,0,0,.6)}
 .tap-hint{font-size:12px;color:var(--muted);font-weight:600}
 .tap-hint b{color:var(--gold)}
@@ -328,9 +329,90 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .ach.got .an{color:var(--text)}
 
 .scrollpad{height:8px}
-@media (max-width:340px){ .valor{font-size:27px} .med{width:164px;height:164px} .med .em{font-size:64px} .medwrap{width:210px;height:210px} }
+@media (max-width:340px){ .valor{font-size:27px} .med{width:164px;height:164px} .med .em{width:106px} .medwrap{width:210px;height:210px} }
+/* ---------- auto-patrol toggle (City) ---------- */
+.autobar{display:flex;align-items:center;gap:11px;width:100%;max-width:380px;
+  background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--line);border-radius:13px;padding:10px 12px;transition:border-color .2s,box-shadow .2s}
+.autobar .ai{font-size:21px}
+.autobar .amid{flex:1;min-width:0}
+.autobar .anm{font-weight:800;font-size:13.5px}
+.autobar .asub{font-size:10.5px;color:var(--muted);margin-top:1px}
+.autobar.act{border-color:var(--aqua);box-shadow:0 0 0 1px rgba(70,229,183,.18)}
+.autobar.act .anm{color:var(--aqua)}
+
+/* ---------- Network scene ---------- */
+.net-wrap{position:relative}
+.net-grid{position:absolute;inset:0;pointer-events:none;opacity:.22;
+  background-image:linear-gradient(rgba(76,194,255,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(76,194,255,.10) 1px,transparent 1px);
+  background-size:28px 28px;-webkit-mask-image:radial-gradient(circle at 50% 26%,#000,transparent 78%);mask-image:radial-gradient(circle at 50% 26%,#000,transparent 78%)}
+.net-core{position:relative;border-radius:18px;overflow:hidden;padding:20px 14px 16px;text-align:center;
+  background:radial-gradient(130% 130% at 50% 0%, #15264c, #0b1326);border:1px solid #2a3a5e;transition:box-shadow .25s}
+.net-core.corehit{box-shadow:0 0 0 2px rgba(255,200,61,.6), 0 0 30px rgba(255,200,61,.2)}
+.core-rings{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.core-rings i{position:absolute;border-radius:50%;border:2px solid var(--blue);opacity:0;animation:coreRing 2.6s ease-out infinite}
+@keyframes coreRing{0%{width:54px;height:54px;opacity:.45}100%{width:300px;height:300px;opacity:0}}
+.net-core .ncl{font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--blue);text-transform:uppercase;position:relative}
+.net-core .ncv{font-weight:900;font-size:36px;color:#fff;letter-spacing:-.5px;margin-top:2px;position:relative}
+.net-core .ncv .u{color:var(--gold);font-size:.55em;font-weight:800}
+.net-core .ncsub{font-size:12px;color:var(--muted);margin-top:3px;position:relative}
+.net-core .ncsub b{color:var(--gold)}
+.net-chip{display:inline-flex;align-items:center;gap:6px;margin-top:11px;font-size:11px;font-weight:800;position:relative;
+  background:rgba(70,229,183,.12);border:1px solid #2f6f63;color:var(--aqua);border-radius:20px;padding:5px 12px}
+.sectors{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.sector{position:relative;overflow:hidden;border-radius:14px;padding:11px 11px 12px;
+  background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--line)}
+.sector .scnt{position:absolute;top:7px;right:9px;font-size:11px;font-weight:800;color:var(--muted)}
+.sicowrap{height:48px;display:grid;place-items:center;position:relative}
+.sico{font-size:31px;display:inline-block;will-change:transform;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
+.sector .snm{font-size:11.5px;font-weight:700;margin-top:4px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.sector .sout{font-size:12px;color:var(--gold);font-weight:800;text-align:center;margin-top:3px}
+.sector .sodo{font-size:10px;color:var(--dim);text-align:center;margin-top:1px}
+.sgauge{height:3px;border-radius:3px;background:#1b2640;margin-top:8px;overflow:hidden}
+.sgauge i{display:block;height:100%;width:38%;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--aqua));animation:gauge 1.9s ease-in-out infinite}
+@keyframes gauge{0%{transform:translateX(-115%)}100%{transform:translateX(285%)}}
+.emit{position:fixed;z-index:8;width:9px;height:9px;border-radius:50%;background:radial-gradient(circle,#fff,var(--gold));
+  box-shadow:0 0 8px var(--gold);pointer-events:none}
+/* per-generator idle animations */
+@keyframes a-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes a-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.16)}}
+@keyframes a-fly{0%{transform:translate(-11px,1px) rotate(-4deg)}50%{transform:translate(11px,-4px) rotate(4deg)}100%{transform:translate(-11px,1px) rotate(-4deg)}}
+@keyframes a-spin{to{transform:rotate(360deg)}}
+@keyframes a-orbit{0%{transform:rotate(0deg) translateX(7px) rotate(0deg)}100%{transform:rotate(360deg) translateX(7px) rotate(-360deg)}}
+@keyframes a-shake{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+@keyframes a-step{0%,100%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+@keyframes a-glow{0%,100%{filter:drop-shadow(0 0 0 rgba(255,200,61,0))}50%{filter:drop-shadow(0 0 9px rgba(255,200,61,.85))}}
+.an-bob{animation:a-bob 2s ease-in-out infinite}.an-pulse{animation:a-pulse 1.8s ease-in-out infinite}
+.an-fly{animation:a-fly 2.5s ease-in-out infinite}.an-spin{animation:a-spin 6s linear infinite}
+.an-orbit{animation:a-orbit 3s linear infinite}.an-shake{animation:a-shake 1.2s ease-in-out infinite}
+.an-step{animation:a-step 1s ease-in-out infinite}.an-glow{animation:a-glow 2.2s ease-in-out infinite}
+
+/* ---------- character chooser ---------- */
+.seclbl-c{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--dim);text-align:center;margin:13px 0 3px}
+.chars{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:2px 18px}
+.charc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 10px;text-align:center;transition:border-color .15s,transform .1s}
+.charc:active{transform:scale(.96)}
+.charc.sel{border-color:var(--blue);box-shadow:0 0 0 1px rgba(76,194,255,.4)}
+.charc .ce{font-size:48px;line-height:1}
+.charc .cn{font-weight:800;font-size:13px;margin-top:6px}
+.suits{display:flex;gap:10px;justify-content:center;padding:8px 18px 2px;flex-wrap:wrap}
+.suit{width:40px;height:40px;border-radius:50%;border:2px solid #2a3a5e;display:grid;place-items:center;transition:transform .1s,border-color .15s}
+.suit:active{transform:scale(.9)}
+.suit.sel{border-color:#fff;transform:scale(1.06)}
+.suit i{width:26px;height:26px;border-radius:50%;display:block}
+.approw{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ccprev{width:124px;height:124px;margin:2px auto 4px;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(130% 130% at 32% 22%, #1c2c52, #0e1830 70%);box-shadow:inset 0 -8px 22px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.4);border:1px solid #2a3a5e}
+.ccprev svg{width:104px;height:104px;display:block}
+.seg{display:flex;gap:8px;justify-content:center;padding:2px 18px;flex-wrap:wrap}
+.segbtn{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-weight:700;font-size:12.5px;color:var(--muted);transition:border-color .15s,color .15s,transform .1s}
+.segbtn:active{transform:scale(.95)}
+.segbtn.sel{border-color:var(--blue);color:var(--text);box-shadow:0 0 0 1px rgba(76,194,255,.35)}
+.swrow{display:flex;gap:9px;justify-content:center;padding:6px 18px 2px;flex-wrap:wrap}
+
+@media (max-width:360px){ #tabs .tl{font-size:8.5px} .sico{font-size:27px} }
 @media (prefers-reduced-motion: reduce){
   .med-ring,.med-glow,.stars i,.boss .bem,.burst-word{animation:none!important}
+  .an-bob,.an-pulse,.an-fly,.an-spin,.an-orbit,.an-shake,.an-step,.an-glow,.core-rings i,.sgauge i{animation:none!important}
   *{animation-duration:.01ms!important}
 }
 </style>
@@ -385,6 +467,11 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
           <button class="med" id="med"><span class="em" id="medEm">🦸</span><span class="cap">FIGHT CRIME</span></button>
         </div>
         <div class="tap-hint">Tap to patrol · <b>+<span id="tapPow">1</span></b> Valor each</div>
+        <div class="autobar" id="autobar">
+          <span class="ai">🤖</span>
+          <div class="amid"><div class="anm">Auto-Patrol</div><div class="asub" id="autoSub">Hands-free tapping — easy on your hands</div></div>
+          <div class="toggle" id="autoTog"><i></i></div>
+        </div>
         <div class="statline">
           <div class="stat"><div class="k">Per Second</div><div class="v gold" id="cityVps">0</div></div>
           <div class="stat"><div class="k">Per Tap</div><div class="v blue" id="cityTap">1</div></div>
@@ -414,6 +501,12 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
       <div id="upgList"></div>
     </section>
 
+    <!-- NETWORK -->
+    <section class="panel" data-panel="network">
+      <div class="phead"><div class="ptitle">Network</div><div class="psub" id="netSub">Your city, running itself</div></div>
+      <div class="net-wrap"><div class="net-grid"></div><div id="netBody"></div></div>
+    </section>
+
     <!-- THREATS -->
     <section class="panel" data-panel="threats">
       <div class="phead"><div class="ptitle">Threats</div><div class="psub" id="threatSub"></div></div>
@@ -432,6 +525,7 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
     <button class="tab on" data-tab="city"><span class="ti">🏙️</span><span class="tl">City</span></button>
     <button class="tab" data-tab="team"><span class="ti">👥</span><span class="tl">Team</span></button>
     <button class="tab" data-tab="powers"><span class="ti">⚡</span><span class="tl">Powers</span></button>
+    <button class="tab" data-tab="network"><span class="ti">🌐</span><span class="tl">Network</span></button>
     <button class="tab" data-tab="threats"><span class="ti">⚔️</span><span class="tl">Threats</span></button>
     <button class="tab" data-tab="legacy"><span class="ti">⭐</span><span class="tl">Legacy</span></button>
   </nav>
@@ -481,6 +575,48 @@ const ORIGINS=[
   {id:'mind',  name:'Mastermind', emoji:'🧠', fx:'−15% team costs',                blurb:'Three steps ahead. Allies and gear cost less.'},
   {id:'cosmic',name:'Cosmic',     emoji:'✨', fx:'+3h offline · +20% Legend',      blurb:'Touched by the stars. Bigger offline hauls and prestige.'},
 ];
+const OUTFITS=[
+  {id:'azure',   name:'Azure',   color:'#4cc2ff'},
+  {id:'crimson', name:'Crimson', color:'#ff4d5e'},
+  {id:'emerald', name:'Emerald', color:'#46e5b7'},
+  {id:'violet',  name:'Violet',  color:'#9b6bff'},
+  {id:'gold',    name:'Gold',    color:'#ffc83d'},
+];
+const ANIM={patrol:'an-bob',sidekick:'an-pulse',hotline:'an-shake',drone:'an-fly',k9:'an-bob',vigil:'an-pulse',
+  tower:'an-glow',suit:'an-step',sat:'an-orbit',academy:'an-pulse',league:'an-glow',orbital:'an-spin'};
+function avatarEmoji(){ return S.sex==='f'?'🦸‍♀️':S.sex==='m'?'🦸‍♂️':'🦸'; }
+function suitColor(){ return (OUTFITS[S.outfit]||OUTFITS[0]).color; }
+const SKINS=['#f2c6a0','#d99a6c','#a86b43','#6b4226'];
+const HAIRS=[['#2b2b33','Black'],['#4a3526','Dark Brown'],['#6f4a2f','Brown'],['#d9a441','Blonde'],['#8a3324','Auburn'],['#d7dbe2','White']];
+const HAIRSTYLES=[['short','Short'],['long','Long'],['bald','Bald']];
+function shade(hex,p){ hex=(hex||'#000').replace('#',''); let r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16);
+  const f=p<0?0:255,t=Math.abs(p); r=Math.round(r+(f-r)*t);g=Math.round(g+(f-g)*t);b=Math.round(b+(f-b)*t);
+  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+function heroSVG(o){
+  const skin=o.skin||SKINS[1], hair=o.hair||HAIRS[1][0], style=o.style||'short', suit=o.suit||'#4cc2ff', broad=o.sex==='m';
+  const cape=shade(suit,-0.5), suitHi=shade(suit,0.22), skinSh=shade(skin,-0.16), hairHi=shade(hair,0.22), hairSh=shade(hair,-0.3), mask=shade(suit,-0.55);
+  const sw=broad?6:0;
+  const backHair = style==='long' ? `<path d="M30,42 Q18,58 22,82 L34,82 Q30,60 38,46 Z" fill="${hairSh}"/><path d="M70,42 Q82,58 78,82 L66,82 Q70,60 62,46 Z" fill="${hairSh}"/>` : '';
+  let frontHair='';
+  if(style==='short'||style==='long'){
+    frontHair=`<path d="M31,44 Q28,17 50,16 Q72,17 69,44 Q63,29 50,29 Q37,29 31,44 Z" fill="${hair}"/><path d="M31,44 Q33,33 40,30 Q36,36 36,44 Z" fill="${hairHi}" opacity=".5"/>`;
+  } else { frontHair=`<ellipse cx="44" cy="28" rx="7" ry="4" fill="#ffffff" opacity=".10"/>`; }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">`+
+    `<path d="M50,54 L${86+sw},76 Q${88+sw},101 66,102 L34,102 Q${12-sw},101 ${14-sw},76 Z" fill="${cape}"/>`+
+    `<path d="M50,58 L${78+sw},77 Q${81+sw},101 62,102 L38,102 Q${19-sw},101 ${22-sw},77 Z" fill="${suit}"/>`+
+    `<path d="M50,58 L${78+sw},77 Q${81+sw},101 62,102 L50,102 Z" fill="${suitHi}" opacity=".25"/>`+
+    `<path d="M50,74 l3,6 6.5,.6 -5,4.4 1.6,6.4 -6.1,-3.5 -6.1,3.5 1.6,-6.4 -5,-4.4 6.5,-.6 Z" fill="#ffd54a"/>`+
+    `<path d="M43,53 h14 v8 q0,4 -7,4 q-7,0 -7,-4 Z" fill="${skinSh}"/>`+
+    backHair+
+    `<ellipse cx="32" cy="42" rx="4.5" ry="5.5" fill="${skin}"/><ellipse cx="68" cy="42" rx="4.5" ry="5.5" fill="${skin}"/>`+
+    `<ellipse cx="50" cy="40" rx="18" ry="20.5" fill="${skin}"/>`+
+    `<path d="M34,48 Q50,62 66,48 Q60,58 50,59 Q40,58 34,48 Z" fill="${skinSh}" opacity=".35"/>`+
+    frontHair+
+    `<path d="M30,41 Q29,35 37,35 Q44,35 47,38 Q50,40 53,38 Q56,35 63,35 Q71,35 70,41 Q69,48 59,47 Q52,46 51,42 Q50,41 49,42 Q48,46 41,47 Q31,48 30,41 Z" fill="${mask}"/>`+
+    `<path d="M35,40 Q39,37 44,40 Q40,44 35,42 Z" fill="#fff"/><path d="M65,40 Q61,37 56,40 Q60,44 65,42 Z" fill="#fff"/>`+
+    `</svg>`;
+}
+function heroOpts(){ return {sex:S.sex, skin:S.skin, hair:S.hairColor, style:S.hairStyle, suit:suitColor()}; }
 
 const COST_GROWTH=1.15;
 const GENS=[
@@ -510,6 +646,12 @@ const UPGRADES=[
   {id:'beacon',   name:'Hero Beacon',       emoji:'🔆', cost:1e9,   type:'global',   mult:1.5, desc:'+50% to ALL Valor production.'},
   {id:'unity',    name:'United Front',      emoji:'🤝', cost:6e11,  type:'global',   mult:1.5, desc:'+50% to ALL Valor production.'},
   {id:'legendcity',name:'City of Legends',  emoji:'🌆', cost:5e13,  type:'global',   mult:2,   desc:'Double ALL Valor production.'},
+  {id:'auto_r1', name:'Reflex Servos',      emoji:'⚙️', cost:2.2e3, type:'autorate', mult:1.6, desc:'Auto-Patrol taps 60% faster.'},
+  {id:'auto_p1', name:'Auto-Targeting',     emoji:'🎯', cost:1.4e4, type:'autopow',  mult:2,   desc:'Auto-Patrol taps hit ×2 harder.'},
+  {id:'auto_r2', name:'Overclocked Servos', emoji:'🌀', cost:2.6e5, type:'autorate', mult:1.8, desc:'Auto-Patrol taps 80% faster.'},
+  {id:'auto_p2', name:'Smart Strikes',      emoji:'🧠', cost:5e6,   type:'autopow',  mult:3,   desc:'Auto-Patrol taps hit ×3 harder.'},
+  {id:'auto_r3', name:'Hyperdrive Servos',  emoji:'⚡', cost:3.5e8, type:'autorate', mult:1.8, desc:'Auto-Patrol taps 80% faster again.'},
+  {id:'auto_p3', name:'Precision Matrix',   emoji:'💠', cost:2e10,  type:'autopow',  mult:4,   desc:'Auto-Patrol taps hit ×4 harder.'},
 ];
 const GEN_TIERS=[10,25,50,100,150];
 GENS.forEach(g=>{
@@ -576,6 +718,7 @@ const SKILLS=[
   {id:'sk_legend1',emoji:'⭐', name:'Inspiring Saga',   cost:6,  type:'legend',    val:1.25, desc:'+25% Legend earned on prestige.'},
   {id:'sk_click2', emoji:'✊', name:'Seismic Strike',   cost:8,  type:'clickmult', val:3,    desc:'Triple tap power (permanent).', req:'sk_click1'},
   {id:'sk_prod3',  emoji:'🌐', name:'Global Network',   cost:12, type:'prod',      val:2,    desc:'Double all production (permanent).', req:'sk_prod2'},
+  {id:'sk_auto1',  emoji:'🤖', name:'Tireless',         cost:4,  type:'autorate',  val:1.5,  desc:'Auto-Patrol taps 50% faster (permanent).'},
 ];
 
 const ACH=[
@@ -619,6 +762,7 @@ function defaultState(){
     legend:0, prestiges:0, villains:0, storyIndex:0,
     threat:null, threatCD:18, permaBonus:0,
     ach:{}, origin:null, name:'', buyAmt:1,
+    autoTap:false, sex:null, outfit:0, skin:'#d99a6c', hairColor:'#4a3526', hairStyle:'short',
     muted:false, reduceFx:false,
     t:now(), created:now(),
     _usedPower:false, _seenTabs:{},
@@ -716,6 +860,8 @@ function threatRewardMult(){ return hasFlag('sk_threat1')?2:1; }
 function legendMult(){ let m=1; if(S.origin==='cosmic') m*=1.2; m*=skillVal('legend',1); return m; }
 function offlineCapHours(){ let h=4; if(S.origin==='cosmic') h+=3; for(const k of SKILLS){ if(k.type==='offline'&&S.ups[k.id]) h+=k.val; } return h; }
 function cdMult(){ return skillVal('cd',1); }
+function autoRate(){ let r=3; for(const u of UPGRADES){ if(u.type==='autorate'&&S.ups[u.id]) r*=u.mult; } r*=skillVal('autorate',1); return Math.min(r,28); }
+function autoPowMult(){ let m=1; for(const u of UPGRADES){ if(u.type==='autopow'&&S.ups[u.id]) m*=u.mult; } return m; }
 
 function genCostTotal(g,owned,amt){
   const base=g.cost*costMult()*Math.pow(COST_GROWTH,owned);
@@ -740,7 +886,7 @@ function legendGain(){
 function canPrestige(){ return S.lifetime>=1e6; }
 
 /* unlock thresholds for tabs */
-const TAB_UNLOCK={ city:0, team:0, powers:300, threats:1500, legacy:1e6 };
+const TAB_UNLOCK={ city:0, team:0, powers:300, network:1000, threats:1500, legacy:1e6 };
 function tabUnlocked(tab){ return S.lifetime>=(TAB_UNLOCK[tab]||0); }
 
 /* ---------------- rendering ---------------- */
@@ -751,6 +897,7 @@ function cacheEls(){
   el.tapPow=$('#tapPow'); el.cityVps=$('#cityVps'); el.cityTap=$('#cityTap'); el.cityTeam=$('#cityTeam');
   el.teamList=$('#teamList'); el.teamSub=$('#teamSub'); el.abilWrap=$('#abilWrap'); el.upgList=$('#upgList');
   el.threatBody=$('#threatBody'); el.threatSub=$('#threatSub'); el.legacyBody=$('#legacyBody'); el.cityThreat=$('#cityThreat');
+  el.autobar=$('#autobar'); el.autoTog=$('#autoTog'); el.autoSub=$('#autoSub'); el.netBody=$('#netBody');
 }
 
 /* HUD + city stats — cheap, runs every frame */
@@ -767,6 +914,13 @@ function renderHUD(){
   el.rankTitle.textContent=r.name; el.rankEmblem.textContent=r.emoji;
   el.heroName.textContent=S.name||'Hero';
   document.documentElement.style.setProperty('--rank', r.accent);
+  // auto-patrol toggle reflection
+  const ab=el.autobar, tg=el.autoTog, as=el.autoSub;
+  if(ab) ab.classList.toggle('act',S.autoTap);
+  if(tg) tg.classList.toggle('on',S.autoTap);
+  if(as) as.textContent = S.autoTap
+    ? ('Active · '+autoRate().toFixed(autoRate()<10?1:0)+'/sec · +'+fmt(clickPower()*autoPowMult())+'/tap')
+    : 'Hands-free tapping — easy on your hands';
 }
 
 /* generic: build a signature so we only rebuild list DOM when structure changes */
@@ -868,7 +1022,7 @@ function renderUpgrades(){
     if(vis.length===0){ inner.innerHTML='<div class="empty">All caught up. New upgrades appear as you progress.</div>'; }
     vis.forEach(u=>{
       const row=document.createElement('div'); row.className='row'; row.dataset.up=u.id;
-      const tag=u.type==='click'||u.type==='clickpct'?'Tap':u.type==='global'?'Global':'Team';
+      const tag=u.type==='click'||u.type==='clickpct'?'Tap':u.type==='global'?'Global':u.type==='autorate'||u.type==='autopow'?'Auto':'Team';
       row.innerHTML=`<div class="sweep"></div><div class="ico">${u.emoji}</div>
         <div class="mid"><div class="nm">${u.name} <span class="tag">${tag}</span></div><div class="ds">${u.desc}</div></div>
         <div class="end"><div class="cost rcost">${fmt(u.cost)}</div></div>`;
@@ -1170,8 +1324,8 @@ function checkUnlocks(){
     const un=tabUnlocked(tab);
     if(un && !S._seenTabs[tab] && TAB_UNLOCK[tab]>0){
       S._seenTabs[tab]=true;
-      const names={powers:'Powers',threats:'Threats',legacy:'Legacy'};
-      const blurb={powers:'Abilities & upgrades are available.',threats:'Villains now threaten the city — fight back!',legacy:'You can now retire to become a Legend.'};
+      const names={powers:'Powers',network:'Network',threats:'Threats',legacy:'Legacy'};
+      const blurb={powers:'Abilities & upgrades are available.',network:'Watch your automated city come alive.',threats:'Villains now threaten the city — fight back!',legacy:'You can now retire to become a Legend.'};
       if(names[tab]){
         toast('New: '+names[tab]+' unlocked!', blurb[tab], 'unlock', '🎉');
         const tb=$(`.tab[data-tab="${tab}"]`);
@@ -1226,6 +1380,104 @@ function modalLocked(html){ modal(html); const sc=$('#scrim'); if(sc) sc.dataset
 function closeModal(){ const h=$('#modalHost'); h.classList.remove('show'); h.innerHTML=''; }
 window.closeModal=closeModal;
 
+/* ---------------- appearance ---------------- */
+function applyAppearance(){
+  document.documentElement.style.setProperty('--suit', suitColor());
+  const m=$('#medEm'); if(m) m.innerHTML=heroSVG(heroOpts());
+  const mg=$('.med-glow'); if(mg) mg.style.background='radial-gradient(circle, '+suitColor()+', transparent 62%)';
+}
+
+/* ---------------- auto-patrol ---------------- */
+let autoAcc=0, lastAutoFx=0;
+function autoTapOnce(){
+  const v=clickPower()*autoPowMult();
+  S.v+=v; S.earned+=v; S.lifetime+=v; S.clicks++;
+  const t=now();
+  if(curTab==='city' && !S.reduceFx && t-lastAutoFx>110){
+    lastAutoFx=t;
+    const med=$('#med'); if(med){ med.classList.remove('punch'); void med.offsetWidth; med.classList.add('punch'); }
+    floatNum('+'+fmt(v));
+    if(S.clicks%10===0) pushCrime();
+  }
+}
+
+/* ---------------- Network scene ---------------- */
+let netDisp={}, netSig='', lastNetTxt=0, lastEmit=0;
+function ownedGenList(){ return GENS.filter(g=>(S.gens[g.id]||0)>0); }
+function buildNetwork(){
+  const body=el.netBody||$('#netBody'); if(!body) return;
+  const owned=ownedGenList();
+  let html='<div class="net-core"><div class="core-rings"><i></i><i style="animation-delay:.85s"></i><i style="animation-delay:1.7s"></i></div>'+
+    '<div class="ncl">⚡ City Output</div><div class="ncv" id="netVps">0<span class="u">/s</span></div>'+
+    '<div class="ncsub">Banked&nbsp; <b id="netBank">0</b> Valor</div><div id="netChip"></div></div>';
+  if(owned.length===0){
+    html+='<div class="empty">Recruit your first ally in <b>Team</b> to bring the city to life. Each one you add appears here, working.</div>';
+  } else {
+    html+='<div class="sectors" id="sectors"></div>';
+  }
+  body.innerHTML=html;
+  if(owned.length){
+    const grid=$('#sectors');
+    owned.forEach(g=>{
+      if(netDisp[g.id]==null) netDisp[g.id]=0;
+      const d=document.createElement('div'); d.className='sector'; d.dataset.gen=g.id;
+      d.innerHTML=`<div class="scnt">×<span class="snum">0</span></div>
+        <div class="sicowrap"><span class="sico ${ANIM[g.id]||'an-pulse'}">${g.emoji}</span></div>
+        <div class="snm">${g.name}</div><div class="sout"><span class="srate">0</span>/s</div>
+        <div class="sodo">⌁ <span class="sacc">0</span></div><div class="sgauge"><i></i></div>`;
+      grid.appendChild(d);
+    });
+  }
+}
+function renderNetwork(dt){
+  const owned=ownedGenList();
+  const s=owned.map(g=>g.id).join(',');
+  if(s!==netSig){ netSig=s; buildNetwork(); }
+  const prod=production(), gm=globalMult(), t=now();
+  const txtTick = t-lastNetTxt>70; if(txtTick) lastNetTxt=t;
+  const nv=$('#netVps'); if(nv && txtTick) nv.innerHTML=fmt(prod)+'<span class="u">/s</span>';
+  const nb=$('#netBank'); if(nb && txtTick) nb.textContent=fmt(S.v);
+  const chip=$('#netChip'); if(chip && txtTick) chip.innerHTML = S.autoTap ? `<span class="net-chip">🤖 Auto-Patrol · ${autoRate().toFixed(0)}/s</span>` : '';
+  $$('#sectors .sector').forEach(d=>{
+    const g=GMAP[d.dataset.gen]; const owned=S.gens[g.id]||0;
+    const out=owned*g.rate*genTierMult(g.id)*gm;
+    netDisp[g.id]=(netDisp[g.id]||0)+out*dt;
+    if(txtTick){
+      d.querySelector('.snum').textContent=owned;
+      d.querySelector('.srate').textContent=fmt(out);
+      d.querySelector('.sacc').textContent=fmt(netDisp[g.id]);
+    }
+  });
+  emitPulse(owned, prod);
+}
+function emitPulse(owned, prod){
+  if(!owned.length || S.reduceFx) return;
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const t=now();
+  const interval=clamp(820 - Math.log10(Math.max(10,prod))*110, 120, 820);
+  if(t-lastEmit<interval) return;
+  lastEmit=t;
+  const core=$('#netVps'); if(!core) return;
+  const weights=owned.map(g=>(S.gens[g.id]||0)*g.rate*genTierMult(g.id));
+  let tot=0; for(const w of weights) tot+=w; if(tot<=0) return;
+  let r=Math.random()*tot, idx=0; for(;idx<weights.length-1;idx++){ r-=weights[idx]; if(r<=0) break; }
+  const g=owned[idx];
+  const sd=$(`#sectors .sector[data-gen="${g.id}"] .sico`); if(!sd) return;
+  const sr=sd.getBoundingClientRect(), cr=core.getBoundingClientRect();
+  const sx=sr.left+sr.width/2, sy=sr.top+sr.height/2;
+  const cx=cr.left+cr.width/2, cy=cr.top+cr.height/2;
+  const dot=document.createElement('div'); dot.className='emit';
+  dot.style.left=sx+'px'; dot.style.top=sy+'px';
+  document.body.appendChild(dot);
+  try{
+    const a=dot.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},
+      {transform:`translate(calc(-50% + ${cx-sx}px), calc(-50% + ${cy-sy}px)) scale(.35)`,opacity:.15}],
+      {duration:540,easing:'cubic-bezier(.4,.08,.5,1)'});
+    a.onfinish=()=>{ dot.remove(); const c=$('.net-core'); if(c){ c.classList.remove('corehit'); void c.offsetWidth; c.classList.add('corehit'); } };
+  }catch(e){ /* WAAPI unavailable */ }
+  setTimeout(()=>{ if(dot.parentNode) dot.remove(); }, 760);
+}
+
 /* ---------------- game loop + offline ---------------- */
 let teamSig='', powSig='', legacySig='';
 let lastTick=now(), lastSave=now(), hiddenAt=now(), autoBuyTimer=0, chkTimer=0;
@@ -1266,16 +1518,22 @@ function loop(){
   if(dt<0) dt=0; if(dt>1) dt=1;
   const prod=production();
   if(prod>0){ const g=prod*dt; S.v+=g; S.earned+=g; S.lifetime+=g; }
+  if(S.autoTap && !document.hidden){
+    autoAcc += autoRate()*dt;
+    let n=0; while(autoAcc>=1 && n<8){ autoTapOnce(); autoAcc-=1; n++; }
+    if(autoAcc>4) autoAcc=4;
+  }
   if(S.threat){ if(prod>0) damageThreat(prod*dt,false); }
   else { S.threatCD-=dt; if(S.threatCD<=0){ spawnThreat(); if(!S.threat) S.threatCD=8; } }
   if(hasFlag('sk_autoteam')){ autoBuyTimer-=dt; if(autoBuyTimer<=0){ autoBuyTimer=2.5; autoBuyCheapest(); } }
   if(hasFlag('sk_autopow')) autoCastPowers();
   chkTimer-=dt; if(chkTimer<=0){ chkTimer=1; checkUnlocks(); checkAch(); }
-  renderHUD(); renderActive();
+  renderHUD(); renderActive(dt);
   if(t-lastSave>8000){ lastSave=t; save(); }
   requestAnimationFrame(loop);
 }
-function renderActive(){
+function renderActive(dt){
+  dt=dt||0;
   if(curTab==='team'){
     const ts=unlockedGenCount()+'|'+S.buyAmt;
     if(ts!==teamSig){ teamSig=ts; buildTeamRows(); }
@@ -1284,6 +1542,8 @@ function renderActive(){
     const ps=''+POWERS.filter(p=>S.lifetime>=p.unlock).length;
     if(ps!==powSig){ powSig=ps; buildPowers(); }
     updateAbilities(); renderUpgrades();
+  } else if(curTab==='network'){
+    renderNetwork(dt);
   } else if(curTab==='threats'){
     renderThreats();
   } else if(curTab==='legacy'){
@@ -1295,8 +1555,8 @@ function renderActive(){
 
 /* ---------------- build / tabs ---------------- */
 function buildAll(){
-  teamSig=''; powSig=''; legacySig=''; threatSig=''; upgSig='';
-  buildTeamRows(); buildPowers(); renderThreats(); renderLegacy(); refreshTabHints();
+  teamSig=''; powSig=''; legacySig=''; threatSig=''; upgSig=''; netSig=''; netDisp={};
+  buildTeamRows(); buildPowers(); renderThreats(); renderLegacy(); buildNetwork(); applyAppearance(); refreshTabHints();
 }
 function switchTab(tab){
   if(!tabUnlocked(tab)){ toast('Locked', 'Reach '+fmt(TAB_UNLOCK[tab])+' Valor earned first.', 'warn', '🔒'); return; }
@@ -1305,6 +1565,7 @@ function switchTab(tab){
   $$('.panel').forEach(p=>p.classList.toggle('on',p.dataset.panel===tab));
   if(tab==='team') teamSig='';
   if(tab==='powers') powSig='';
+  if(tab==='network') netSig='';
   if(tab==='legacy') legacySig='';
   if(tab==='threats') threatSig='';
   refreshTabHints();
@@ -1322,6 +1583,14 @@ function openSettings(){
   let saveStr=''; try{ saveStr=localStorage.getItem(SAVEKEY)||''; }catch(e){}
   modal(`<div class="mhead"><div class="me">⚙️</div><div class="mt">Settings</div></div>`+
     `<div class="mbody">`+
+      `<div class="setrow" style="display:block"><div class="sk" style="margin-bottom:8px">Appearance</div>`+
+        `<div class="ccprev" id="apPrev" style="width:98px;height:98px"></div>`+
+        `<div class="seg" id="apSexSeg" style="margin-top:8px"><button class="segbtn${S.sex!=='m'?' sel':''}" data-x="f">🦸‍♀️ Heroine</button><button class="segbtn${S.sex==='m'?' sel':''}" data-x="m">🦸‍♂️ Hero</button></div>`+
+        `<div class="seclbl-c">Skin</div><div class="swrow" id="apSkin">${SKINS.map(c=>`<button class="suit${c===S.skin?' sel':''}" data-c="${c}"><i style="background:${c}"></i></button>`).join('')}</div>`+
+        `<div class="seclbl-c">Hair</div><div class="swrow" id="apHair">${HAIRS.map(h=>`<button class="suit${h[0]===S.hairColor?' sel':''}" data-c="${h[0]}" title="${h[1]}"><i style="background:${h[0]}"></i></button>`).join('')}</div>`+
+        `<div class="seg" id="apStyle" style="margin-top:8px">${HAIRSTYLES.map(s=>`<button class="segbtn${s[0]===S.hairStyle?' sel':''}" data-s="${s[0]}">${s[1]}</button>`).join('')}</div>`+
+        `<div class="seclbl-c">Suit</div><div class="swrow" id="apSuit">${OUTFITS.map((o,i)=>`<button class="suit${i===S.outfit?' sel':''}" data-i="${i}" title="${o.name}"><i style="background:${o.color}"></i></button>`).join('')}</div>`+
+        `</div>`+
       `<div class="setrow"><div><div class="sk">Reduce effects</div><div class="sv">Fewer animations & screen bursts</div></div><div class="toggle ${S.reduceFx?'on':''}" id="tgFx"><i></i></div></div>`+
       `<div class="setrow" style="display:block"><div class="sk" style="margin-bottom:6px">Backup / transfer save</div>`+
         `<textarea class="imparea" id="saveBox" spellcheck="false">${saveStr}</textarea>`+
@@ -1332,6 +1601,14 @@ function openSettings(){
     `</div>`+
     `<div class="mfoot"><button class="btn primary" onclick="closeModal()">Done</button></div>`);
   const fx=$('#tgFx'); if(fx) fx.addEventListener('click',function(){ S.reduceFx=!S.reduceFx; this.classList.toggle('on',S.reduceFx); save(); });
+  const apPrev=$('#apPrev'); const apDraw=()=>{ if(apPrev) apPrev.innerHTML=heroSVG(heroOpts()); };
+  const apPick=(sel,b)=>{ $$(sel).forEach(x=>x.classList.toggle('sel',x===b)); };
+  apDraw();
+  $$('#apSexSeg .segbtn').forEach(b=>b.addEventListener('click',()=>{ S.sex=b.dataset.x; apPick('#apSexSeg .segbtn',b); applyAppearance(); apDraw(); save(); }));
+  $$('#apSkin .suit').forEach(b=>b.addEventListener('click',()=>{ S.skin=b.dataset.c; apPick('#apSkin .suit',b); applyAppearance(); apDraw(); save(); }));
+  $$('#apHair .suit').forEach(b=>b.addEventListener('click',()=>{ S.hairColor=b.dataset.c; apPick('#apHair .suit',b); applyAppearance(); apDraw(); save(); }));
+  $$('#apStyle .segbtn').forEach(b=>b.addEventListener('click',()=>{ S.hairStyle=b.dataset.s; apPick('#apStyle .segbtn',b); applyAppearance(); apDraw(); save(); }));
+  $$('#apSuit .suit').forEach(b=>b.addEventListener('click',()=>{ S.outfit=parseInt(b.dataset.i,10); apPick('#apSuit .suit',b); applyAppearance(); apDraw(); save(); }));
   const cp=$('#btnCopy'); if(cp) cp.addEventListener('click',()=>{ const b=$('#saveBox'); b.select();
     try{ if(navigator.clipboard) navigator.clipboard.writeText(b.value); else document.execCommand('copy'); }catch(e){}
     toast('Copied','Save code is on your clipboard.','', '📋'); });
@@ -1357,26 +1634,45 @@ function defaultHeroName(){
   return a[Math.floor(Math.random()*a.length)]+b[Math.floor(Math.random()*b.length)];
 }
 function newGameFlow(){
-  let sel=null;
-  const cards=ORIGINS.map(o=>`<button class="orig" data-o="${o.id}"><div class="oe">${o.emoji}</div><div class="on">${o.name}</div><div class="of">${o.fx}</div></button>`).join('');
-  modalLocked(`<div class="mhead"><div class="me">🦸</div><div class="mt blue">Begin Your Legend</div></div>`+
-    `<div class="mbody"><p style="text-align:center">Name your hero and pick an origin — it shapes your strengths for the whole run.</p>`+
-    `<input class="namein" id="heroNameIn" maxlength="18" placeholder="Name your hero…">`+
-    `<div class="origins">${cards}</div>`+
-    `<p id="originFx" style="text-align:center;color:var(--muted);min-height:34px;margin-top:6px;font-size:12px"></p></div>`+
-    `<div class="mfoot"><button class="btn primary" id="startBtn" style="opacity:.55">Choose an origin</button></div>`);
-  const fxEl=$('#originFx'), startBtn=$('#startBtn');
-  $$('.orig').forEach(c=>c.addEventListener('click',()=>{
-    sel=c.dataset.o; $$('.orig').forEach(x=>x.classList.toggle('sel',x===c));
-    const o=ORIGINS.find(z=>z.id===sel); fxEl.innerHTML=`<b style="color:var(--text)">${o.name}</b> — ${o.blurb}`;
-    startBtn.style.opacity='1'; startBtn.textContent='Start as '+o.name+' →';
-  }));
+  let sx='f', sk=S.skin, hc=S.hairColor, st=S.hairStyle, ot=0, og=null;
+  const swatch=(cls,arr,getColor,getKey,selKey)=>arr.map((a,i)=>`<button class="suit ${cls}${getKey(a,i)===selKey?' sel':''}" data-k="${getKey(a,i)}" data-i="${i}" title="${a[1]||''}"><i style="background:${getColor(a)}"></i></button>`).join('');
+  const skinRow=SKINS.map((c,i)=>`<button class="suit skinSw${c===sk?' sel':''}" data-c="${c}"><i style="background:${c}"></i></button>`).join('');
+  const hairRow=HAIRS.map((h,i)=>`<button class="suit hairSw${h[0]===hc?' sel':''}" data-c="${h[0]}" title="${h[1]}"><i style="background:${h[0]}"></i></button>`).join('');
+  const styleRow=HAIRSTYLES.map(s=>`<button class="segbtn styleSw${s[0]===st?' sel':''}" data-s="${s[0]}">${s[1]}</button>`).join('');
+  const suitRow=OUTFITS.map((o,i)=>`<button class="suit suitSw${i===ot?' sel':''}" data-i="${i}" title="${o.name}"><i style="background:${o.color}"></i></button>`).join('');
+  const origCards=ORIGINS.map(o=>`<button class="orig" data-o="${o.id}"><div class="oe">${o.emoji}</div><div class="on">${o.name}</div><div class="of">${o.fx}</div></button>`).join('');
+  modalLocked(`<div class="mhead"><div class="me">🦸</div><div class="mt blue">Create Your Hero</div></div>`+
+    `<div class="mbody">`+
+      `<div class="ccprev" id="ccPrev"></div>`+
+      `<div class="seg" id="sexSeg"><button class="segbtn sel" data-x="f">🦸‍♀️ Heroine</button><button class="segbtn" data-x="m">🦸‍♂️ Hero</button></div>`+
+      `<div class="seclbl-c">Skin</div><div class="swrow" id="skinSeg">${skinRow}</div>`+
+      `<div class="seclbl-c">Hair</div><div class="swrow" id="hairSeg">${hairRow}</div>`+
+      `<div class="seg" id="styleSeg" style="margin-top:6px">${styleRow}</div>`+
+      `<div class="seclbl-c">Suit</div><div class="swrow" id="suitSeg">${suitRow}</div>`+
+      `<div class="seclbl-c">Name</div><input class="namein" id="heroNameIn" maxlength="18" placeholder="Name your hero…">`+
+      `<div class="seclbl-c">Origin — shapes your strengths</div><div class="origins">${origCards}</div>`+
+      `<p id="originFx" style="text-align:center;color:var(--muted);min-height:30px;margin-top:8px;font-size:12px"></p>`+
+    `</div>`+
+    `<div class="mfoot"><button class="btn primary" id="startBtn" style="opacity:.55">Pick an origin</button></div>`);
+  const prev=$('#ccPrev'), fxEl=$('#originFx'), startBtn=$('#startBtn');
+  const draw=()=>{ prev.innerHTML=heroSVG({sex:sx,skin:sk,hair:hc,style:st,suit:OUTFITS[ot].color}); };
+  const pick=(sel,active)=>{ $$(sel).forEach(x=>x.classList.toggle('sel',x===active)); };
+  draw();
+  $$('#sexSeg .segbtn').forEach(b=>b.addEventListener('click',()=>{ sx=b.dataset.x; pick('#sexSeg .segbtn',b); draw(); }));
+  $$('#skinSeg .skinSw').forEach(b=>b.addEventListener('click',()=>{ sk=b.dataset.c; pick('#skinSeg .skinSw',b); draw(); }));
+  $$('#hairSeg .hairSw').forEach(b=>b.addEventListener('click',()=>{ hc=b.dataset.c; pick('#hairSeg .hairSw',b); draw(); }));
+  $$('#styleSeg .styleSw').forEach(b=>b.addEventListener('click',()=>{ st=b.dataset.s; pick('#styleSeg .styleSw',b); draw(); }));
+  $$('#suitSeg .suitSw').forEach(b=>b.addEventListener('click',()=>{ ot=parseInt(b.dataset.i,10); pick('#suitSeg .suitSw',b); draw(); }));
+  $$('.orig').forEach(c=>c.addEventListener('click',()=>{ og=c.dataset.o; pick('.orig',c);
+    const o=ORIGINS.find(z=>z.id===og); fxEl.innerHTML=`<b style="color:var(--text)">${o.name}</b> — ${o.blurb}`;
+    startBtn.style.opacity='1'; startBtn.textContent='Begin →'; }));
   startBtn.addEventListener('click',()=>{
-    if(!sel){ toast('Pick an origin','Tap one of the four cards to begin.','warn','👆'); return; }
-    S.origin=sel; const nm=($('#heroNameIn').value||'').trim().slice(0,18); S.name=nm||defaultHeroName();
+    if(!og){ toast('Pick an origin','Choose one of the four origins to begin.','warn','👆'); return; }
+    S.sex=sx; S.skin=sk; S.hairColor=hc; S.hairStyle=st; S.outfit=ot; S.origin=og;
+    const nm=($('#heroNameIn').value||'').trim().slice(0,18); S.name=nm||defaultHeroName();
     S.created=now(); S.t=now();
-    closeModal(); buildAll(); switchTab('city'); save();
-    toast('Welcome, '+S.name+'!','Tap the medallion to fight crime and earn Valor.','win','🦸');
+    closeModal(); applyAppearance(); buildAll(); switchTab('city'); save();
+    toast('Welcome, '+S.name+'!','Flip on Auto-Patrol any time — tap or go hands-free.','win','🦸');
   });
 }
 
@@ -1404,9 +1700,16 @@ function makeStars(){
   host.innerHTML=h;
 }
 const HERO_EMOJI=['🦸','🦸‍♀️','🦹','🥷','🦾'];
+function toggleAuto(){
+  S.autoTap=!S.autoTap;
+  const tg=$('#autoTog'); if(tg) tg.classList.toggle('on',S.autoTap);
+  toast(S.autoTap?'Auto-Patrol on':'Auto-Patrol off',
+    S.autoTap?'Your hero patrols hands-free while you watch.':'Back to manual tapping.',
+    S.autoTap?'win':'', '🤖');
+  save();
+}
 function init(){
   cacheEls(); makeStars();
-  $('#medEm').textContent=HERO_EMOJI[Math.floor(Math.random()*HERO_EMOJI.length)];
 
   // tab wiring
   $$('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
@@ -1418,9 +1721,10 @@ function init(){
   // header
   $('#btnAch').addEventListener('click',openAch);
   $('#btnSet').addEventListener('click',openSettings);
-  // medallion tap
+  // medallion tap + auto-patrol toggle
   const med=$('#med');
   med.addEventListener('pointerdown',e=>{ e.preventDefault(); doTap(e.clientX,e.clientY); });
+  $('#autoTog').addEventListener('click',toggleAuto);
 
   const had=load();
   // reflect buy toggle state

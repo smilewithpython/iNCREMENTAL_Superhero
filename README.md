@@ -59,11 +59,23 @@ This was built to be safe to close at any time:
 
 ## How to play (the short version)
 
-- **Tap the medallion** on the City screen to earn **Valor**.
+- **Create your hero** when you first open the game: pick **heroine or hero**, your
+  **skin tone** (four options), **hair color** (six) and **hair style** (short, long, or
+  bald), a **suit color**, a name, and an **origin** (the origin shapes your strengths
+  for the whole run). A live preview updates as you choose. You can restyle your hero
+  any time in **⚙️ Settings → Appearance**.
+- **Tap the medallion** on the City screen to earn **Valor** — *or* flip on
+  **🤖 Auto-Patrol** (right under the medallion) and the game taps for you, hands-free,
+  while you watch. It's there from the very start, so you never have to grind taps.
+  Upgrades in **Powers** make Auto-Patrol faster and hit harder.
 - Spend Valor in **Team** to recruit allies who earn Valor automatically. Use the
   **Buy 1 / 10 / 100 / Max** toggle to buy in bulk.
-- New tabs unlock as you earn: **Powers** (abilities + upgrades), **Threats**
-  (villains), and **Legacy** (prestige).
+- New tabs unlock as you earn: **Powers** (abilities + upgrades), **🌐 Network**
+  (your living, self-running city), **Threats** (villains), and **Legacy** (prestige).
+- **🌐 Network** is the payoff: every ally type you own becomes an animated **sector**
+  that works on its own — icons moving, gauges sweeping, energy pulses streaming into a
+  central core, and numbers ticking up everywhere. The more you unlock and automate, the
+  busier and more alive it gets. Just sit and watch the machine run.
 - **Powers** has active abilities on cooldowns — tap them for big bursts.
 - **Threats** are supervillains with a health bar. Your team damages them automatically;
   tap **Strike** to hit harder. Beating a major villain grants a **permanent** production
