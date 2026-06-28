@@ -83,6 +83,15 @@ This was built to be safe to close at any time:
 - **Legacy** lets you **Retire** once you hit 1M Valor: you reset your run for **Legend**
   (permanent production) and unlock a **Mastery** tree — including **auto-recruit** and
   **auto-powers**, which run the game for you. Retiring is how you get strong.
+- **Power Surges** ⚡ — glowing alerts drift across the screen now and then. Tap one to
+  grab a random boon: **Frenzy** (×7 production), a **Tap Storm**, an instant **Valor
+  Cache**, **Overdrive**, or a full ability **Recharge**. Want it hands-free? Turn on
+  **⚙️ Settings → Auto-collect alerts** (or unlock the **Auto-Dispatch** Mastery node) and
+  they collect themselves.
+- **City Crises** 🚨 — every few minutes a situation pops up with a real choice: storm the
+  bank heist for a huge payout but take a beating, or set a trap and play it safe; go
+  public for a fame boost or stay in the shadows. Your call shapes the reward — and a
+  couple of choices grant temporary buffs you'll see tick down up top.
 - The 🏆 button tracks **achievements** (each adds +1% production forever).
 
 Have fun, and go become a legend. ✊

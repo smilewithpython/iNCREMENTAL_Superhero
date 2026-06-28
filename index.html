@@ -409,10 +409,47 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
 .segbtn.sel{border-color:var(--blue);color:var(--text);box-shadow:0 0 0 1px rgba(76,194,255,.35)}
 .swrow{display:flex;gap:9px;justify-content:center;padding:6px 18px 2px;flex-wrap:wrap}
 
+/* ---------- active buff chips ---------- */
+#buffbar{position:relative;z-index:5;flex:0 0 auto;display:flex;gap:7px;justify-content:center;flex-wrap:wrap;padding:2px 10px 0}
+#buffbar:empty{display:none}
+.buffchip{position:relative;display:flex;align-items:center;gap:6px;background:rgba(11,17,33,.94);border:1px solid var(--line);border-radius:20px;padding:4px 11px 4px 9px;box-shadow:0 4px 14px rgba(0,0,0,.45);font-weight:800;font-size:12px}
+.buffchip.bad{border-color:#5a2030}
+.buffchip .bi{font-size:15px}
+.buffchip .bt{min-width:24px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-weight:700}
+
+/* ---------- event overlay (surges + crisis) ---------- */
+#evlayer{position:fixed;inset:0;z-index:28;pointer-events:none;overflow:hidden}
+.surge{position:absolute;left:0;pointer-events:auto;display:grid;place-items:center;width:74px;height:74px;border-radius:50%;border:none;cursor:pointer;
+  background:radial-gradient(circle at 38% 30%, #1d2e54, #0c1428);box-shadow:0 0 0 2px var(--sc,#ffd54a), 0 0 26px var(--sc,#ffd54a), 0 8px 22px rgba(0,0,0,.55);transition:transform .08s}
+.surge:active{transform:scale(.9)}
+.surge .se{font-size:34px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.surge .sring{position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--sc,#ffd54a);opacity:.7;animation:surgeRing 1.3s ease-out infinite}
+@keyframes surgeRing{0%{transform:scale(.85);opacity:.7}100%{transform:scale(1.45);opacity:0}}
+.surge .slabel{position:absolute;bottom:-17px;font-size:10px;font-weight:800;color:var(--sc,#ffd54a);white-space:nowrap;text-shadow:0 1px 3px #000}
+.crisisbar{position:absolute;top:62px;left:50%;transform:translateX(-50%);width:min(444px,94vw);pointer-events:auto;
+  background:linear-gradient(180deg,#241026,#190d18);border:1px solid #6b2f3f;border-left:4px solid var(--red);border-radius:14px;
+  box-shadow:0 12px 32px rgba(0,0,0,.55);padding:10px 11px;display:flex;align-items:center;gap:10px;animation:crisisIn .35s ease}
+@keyframes crisisIn{from{transform:translate(-50%,-16px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+.crisisbar .cbi{font-size:24px;flex-shrink:0}
+.crisisbar .cbmid{flex:1;min-width:0}
+.crisisbar .cbt{font-weight:800;font-size:13px;color:#ffd0d6}
+.crisisbar .cbs{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crisisbar .cbresp{background:var(--red);color:#2a0810;border:none;border-radius:10px;padding:8px 13px;font-weight:800;font-size:12.5px;flex-shrink:0}
+.crisisbar .cbx{background:transparent;border:none;color:var(--muted);font-size:18px;padding:2px 5px;flex-shrink:0}
+.copt{display:block;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:9px;transition:border-color .15s,transform .1s}
+.copt:active{transform:scale(.98)}
+.copt:hover{border-color:#3a4a6b}
+.copt .col{font-weight:800;font-size:14px;color:var(--text)}
+.copt .cod{font-size:12px;color:var(--muted);margin-top:3px}
+.cotag{display:inline-block;margin-top:7px;font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:20px}
+.cotag.good{background:rgba(70,229,183,.14);color:var(--aqua)}
+.cotag.risk{background:rgba(255,92,108,.15);color:var(--red)}
+.cotag.safe{background:rgba(76,194,255,.14);color:var(--blue)}
+
 @media (max-width:360px){ #tabs .tl{font-size:8.5px} .sico{font-size:27px} }
 @media (prefers-reduced-motion: reduce){
   .med-ring,.med-glow,.stars i,.boss .bem,.burst-word{animation:none!important}
-  .an-bob,.an-pulse,.an-fly,.an-spin,.an-orbit,.an-shake,.an-step,.an-glow,.core-rings i,.sgauge i{animation:none!important}
+  .an-bob,.an-pulse,.an-fly,.an-spin,.an-orbit,.an-shake,.an-step,.an-glow,.core-rings i,.sgauge i,.surge .sring{animation:none!important}
   *{animation-duration:.01ms!important}
 }
 </style>
@@ -456,6 +493,8 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
     </div>
     <button class="hicon" id="btnSet" aria-label="Settings">⚙️</button>
   </header>
+
+  <div id="buffbar"></div>
 
   <main id="panels">
     <!-- CITY -->
@@ -530,6 +569,7 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
     <button class="tab" data-tab="legacy"><span class="ti">⭐</span><span class="tl">Legacy</span></button>
   </nav>
 
+  <div id="evlayer"></div>
   <div id="toasts"></div>
   <div id="burst"></div>
   <div id="modalHost"></div>
@@ -719,6 +759,8 @@ const SKILLS=[
   {id:'sk_click2', emoji:'✊', name:'Seismic Strike',   cost:8,  type:'clickmult', val:3,    desc:'Triple tap power (permanent).', req:'sk_click1'},
   {id:'sk_prod3',  emoji:'🌐', name:'Global Network',   cost:12, type:'prod',      val:2,    desc:'Double all production (permanent).', req:'sk_prod2'},
   {id:'sk_auto1',  emoji:'🤖', name:'Tireless',         cost:4,  type:'autorate',  val:1.5,  desc:'Auto-Patrol taps 50% faster (permanent).'},
+  {id:'sk_dispatch',emoji:'📡',name:'Auto-Dispatch',    cost:3,  type:'flag',      desc:'Automatically collects Power Surges the moment they appear.'},
+  {id:'sk_crisis', emoji:'🎖️', name:'Crisis Command',   cost:4,  type:'flag',      desc:'+50% Valor from City Crisis rewards.'},
 ];
 
 const ACH=[
@@ -746,6 +788,11 @@ const ACH=[
   {id:'a_legend100',emoji:'✨',name:'Mythmaker',    cond:s=>s.legend>=100},
   {id:'a_allglobal',emoji:'🎆',name:'Full Support', cond:s=>UPGRADES.filter(u=>u.type==='global').every(u=>s.ups[u.id])},
   {id:'a_skill5', emoji:'🧠', name:'Master',        cond:s=>SKILLS.filter(k=>s.ups[k.id]).length>=5},
+  {id:'a_surge1', emoji:'⚡', name:'Quick Hands',   cond:s=>(s.surges||0)>=1},
+  {id:'a_surge25',emoji:'🌟', name:'First Responder',cond:s=>(s.surges||0)>=25},
+  {id:'a_overdrive',emoji:'🔴',name:'Redline',      cond:s=>s._overdrive},
+  {id:'a_crisis1',emoji:'🚨', name:'On the Scene',  cond:s=>(s.crises||0)>=1},
+  {id:'a_crisis15',emoji:'🎖️',name:'Crisis Veteran',cond:s=>(s.crises||0)>=15},
 ];
 
 const CRIMES=['Mugging','Carjacking','Bank alarm','Purse snatch','Arson attempt','Hostage scare','Jewel heist',
@@ -763,6 +810,7 @@ function defaultState(){
     threat:null, threatCD:18, permaBonus:0,
     ach:{}, origin:null, name:'', buyAmt:1,
     autoTap:false, sex:null, outfit:0, skin:'#d99a6c', hairColor:'#4a3526', hairStyle:'short',
+    buffs:{}, surgeCD:80, crisisCD:200, autoSurge:false, surges:0, crises:0,
     muted:false, reduceFx:false,
     t:now(), created:now(),
     _usedPower:false, _seenTabs:{},
@@ -782,7 +830,7 @@ function load(){
   const d=rawLoad();
   S=defaultState();
   if(d && typeof d==='object'){ Object.assign(S, d);
-    S.gens=d.gens||{}; S.ups=d.ups||{}; S.pow=d.pow||{}; S.powActive=d.powActive||{}; S.ach=d.ach||{}; S._seenTabs=d._seenTabs||{};
+    S.gens=d.gens||{}; S.ups=d.ups||{}; S.pow=d.pow||{}; S.powActive=d.powActive||{}; S.ach=d.ach||{}; S._seenTabs=d._seenTabs||{}; S.buffs=d.buffs||{};
   }
   return !!d;
 }
@@ -823,6 +871,7 @@ function globalMult(){
   m*= 1 + (S.permaBonus||0);         // boss permanent bonuses
   if(S.origin==='speed') m*=1.4;
   m*=skillVal('prod',1);             // skill prod nodes
+  m*=buffProdMult();                 // surge/event buffs
   // active abilities
   for(const id in S.powActive){
     if(S.powActive[id]>now()){
@@ -845,6 +894,7 @@ function clickMultBase(){
   if(S.origin==='power') m*=2.5;
   for(const u of UPGRADES){ if(u.type==='click' && S.ups[u.id]) m*=u.mult; }
   m*=skillVal('clickmult',1);
+  m*=buffClickMult();
   for(const id in S.powActive){ if(S.powActive[id]>now()){ const p=PMAP[id]; if(p&&p.kind==='rally') m*=p.clickMult; } }
   return m;
 }
@@ -898,6 +948,7 @@ function cacheEls(){
   el.teamList=$('#teamList'); el.teamSub=$('#teamSub'); el.abilWrap=$('#abilWrap'); el.upgList=$('#upgList');
   el.threatBody=$('#threatBody'); el.threatSub=$('#threatSub'); el.legacyBody=$('#legacyBody'); el.cityThreat=$('#cityThreat');
   el.autobar=$('#autobar'); el.autoTog=$('#autoTog'); el.autoSub=$('#autoSub'); el.netBody=$('#netBody');
+  el.buffbar=$('#buffbar'); el.evlayer=$('#evlayer');
 }
 
 /* HUD + city stats — cheap, runs every frame */
@@ -921,6 +972,7 @@ function renderHUD(){
   if(as) as.textContent = S.autoTap
     ? ('Active · '+autoRate().toFixed(autoRate()<10?1:0)+'/sec · +'+fmt(clickPower()*autoPowMult())+'/tap')
     : 'Hands-free tapping — easy on your hands';
+  renderBuffs();
 }
 
 /* generic: build a signature so we only rebuild list DOM when structure changes */
@@ -1380,6 +1432,125 @@ function modalLocked(html){ modal(html); const sc=$('#scrim'); if(sc) sc.dataset
 function closeModal(){ const h=$('#modalHost'); h.classList.remove('show'); h.innerHTML=''; }
 window.closeModal=closeModal;
 
+/* ---------------- events: surges & crises ---------------- */
+function rrand(a,b){ return a+Math.random()*(b-a); }
+const BUFFS={
+  frenzy:   {name:'Frenzy',    icon:'🔥', dur:30,  prod:7,         color:'#ff7a3d'},
+  overdrive:{name:'Overdrive', icon:'⚡', dur:45,  prod:3, click:3, color:'#ffd54a'},
+  tapstorm: {name:'Tap Storm', icon:'👊', dur:20,  click:10,       color:'#4cc2ff'},
+  fame:     {name:'Famous',    icon:'📣', dur:120, prod:1.5,       color:'#9b6bff'},
+  reckless: {name:'Reckless',  icon:'🤕', dur:60,  prod:0.8, bad:true, color:'#ff5c6c'},
+  debt:     {name:'In Debt',   icon:'📉', dur:90,  prod:0.85,bad:true, color:'#ff5c6c'},
+};
+function pruneBuffs(){ const t=now(); for(const k in S.buffs){ if(S.buffs[k]<=t) delete S.buffs[k]; } }
+function addBuff(type,dur){ const b=BUFFS[type]; if(!b) return; S.buffs[type]=now()+(dur||b.dur)*1000; if(type==='overdrive')S._overdrive=true; }
+function buffProdMult(){ let m=1,t=now(); for(const k in S.buffs){ const b=BUFFS[k]; if(b&&b.prod&&S.buffs[k]>t) m*=b.prod; } return m; }
+function buffClickMult(){ let m=1,t=now(); for(const k in S.buffs){ const b=BUFFS[k]; if(b&&b.click&&S.buffs[k]>t) m*=b.click; } return m; }
+
+const BOONS=[
+  {id:'cache',    w:32, name:'Valor Cache', icon:'💰', color:'#ffd54a'},
+  {id:'frenzy',   w:24, name:'Frenzy',      icon:'🔥', color:'#ff7a3d', buff:'frenzy'},
+  {id:'tapstorm', w:22, name:'Tap Storm',   icon:'👊', color:'#4cc2ff', buff:'tapstorm'},
+  {id:'overdrive',w:11, name:'Overdrive',   icon:'⚡', color:'#ffd54a', buff:'overdrive'},
+  {id:'recharge', w:11, name:'Recharge',    icon:'🔋', color:'#46e5b7'},
+];
+function pickBoon(){ let tot=0; for(const b of BOONS) tot+=b.w; let r=Math.random()*tot; for(const b of BOONS){ r-=b.w; if(r<=0) return b; } return BOONS[0]; }
+function applyBoon(b){
+  if(b.buff){ addBuff(b.buff); const bu=BUFFS[b.buff]; toast('Power Surge!', bu.name+' — '+(bu.prod?('×'+bu.prod+' production'):('×'+bu.click+' tap power'))+' for '+bu.dur+'s', 'win', b.icon); }
+  else if(b.id==='cache'){ const amt=Math.max(production()*900, S.v*0.15, 50); gainValor(amt); toast('Valor Cache!', '+'+fmt(amt)+' Valor banked instantly.', 'win', b.icon); }
+  else if(b.id==='recharge'){ for(const id in S.pow) S.pow[id]=0; const amt=Math.max(production()*60,25); gainValor(amt); toast('Recharge!', 'All ability cooldowns reset · +'+fmt(amt)+' Valor', 'win', b.icon); }
+  S.surges=(S.surges||0)+1; checkAch(); save();
+}
+function autoSurgeOn(){ return !!S.autoSurge || hasFlag('sk_dispatch'); }
+function modalOpen(){ const h=$('#modalHost'); return !!(h && h.childElementCount>0); }
+function fxSpark(x,y,color){
+  if(S.reduceFx) return; const host=$('#burst'); if(!host) return;
+  for(let i=0;i<10;i++){ const s=document.createElement('div'); s.className='spark';
+    s.style.position='fixed'; s.style.left=x+'px'; s.style.top=y+'px'; s.style.background=[color,'#fff','#ffd54a'][i%3];
+    host.appendChild(s); const ang=Math.random()*Math.PI*2, dist=42+Math.random()*72, dx=Math.cos(ang)*dist, dy=Math.sin(ang)*dist;
+    try{ s.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(0)`,opacity:0}],{duration:500+Math.random()*300,easing:'cubic-bezier(.2,.8,.3,1)'}); }catch(e){}
+    setTimeout(()=>{ if(s.parentNode) s.remove(); },840);
+  }
+}
+let surgeEls=[];
+function spawnSurge(){
+  if(modalOpen()){ S.surgeCD=8; return; }
+  if(surgeEls.length>0){ S.surgeCD=24; return; }
+  const b=pickBoon(); const layer=$('#evlayer'); if(!layer) return;
+  const node=document.createElement('button'); node.className='surge'; node.style.setProperty('--sc', b.color);
+  node.style.top=Math.round(rrand(0.18,0.5)*(window.innerHeight||700))+'px';
+  node.innerHTML=`<span class="sring"></span><span class="se">${b.icon}</span><span class="slabel">${b.name}</span>`;
+  layer.appendChild(node);
+  const rec={node}; surgeEls.push(rec);
+  const W=window.innerWidth||400; const dur=S.reduceFx?9000:11000; let anim=null, done=false;
+  const cleanup=()=>{ const i=surgeEls.indexOf(rec); if(i>=0) surgeEls.splice(i,1); if(node.parentNode) node.remove(); };
+  const collect=()=>{ if(done) return; done=true; if(anim) try{anim.cancel();}catch(e){} 
+    const r=node.getBoundingClientRect(); fxSpark(r.left+r.width/2, r.top+r.height/2, b.color); applyBoon(b); cleanup(); };
+  node.addEventListener('click', collect);
+  try{ anim=node.animate([{transform:`translateX(${W+70}px)`},{transform:'translateX(-90px)'}],{duration:dur,easing:'linear'});
+       anim.onfinish=()=>{ if(!done) cleanup(); }; }catch(e){ setTimeout(()=>{ if(!done) cleanup(); }, dur); }
+  if(autoSurgeOn()) setTimeout(()=>{ if(!done) collect(); }, 700);
+}
+
+const CRISES=[
+  {icon:'🏦', title:'Bank Heist', flav:'Masked robbers are drilling the downtown vault.', opts:[
+    {label:'Storm in', tag:'risk', tagt:'Huge payout, but you take a beating', run:()=>{ const a=grantSec(1800); addBuff('reckless'); return 'You crush the heist (+'+a+' Valor) — but production dips while you recover.'; }},
+    {label:'Set a trap', tag:'safe', tagt:'Clean, moderate reward', run:()=>{ const a=grantSec(600); return 'Textbook capture. +'+a+' Valor.'; }} ]},
+  {icon:'🎤', title:'Live Interview', flav:'A reporter wants the masked hero on camera.', opts:[
+    {label:'Go public', tag:'good', tagt:'+50% production for 2 min', run:()=>{ addBuff('fame'); return 'The city adores you — fame is fueling your work!'; }},
+    {label:'Stay masked', tag:'safe', tagt:'Small safe reward', run:()=>{ const a=grantSec(300); return 'You melt into the shadows. +'+a+' Valor.'; }} ]},
+  {icon:'🌃', title:'City Blackout', flav:'The power grid is down and crime is spiking.', opts:[
+    {label:'Patrol hard', tag:'good', tagt:'Tap Storm', run:()=>{ addBuff('tapstorm'); return 'You blitz the dark streets — Tap Storm engaged!'; }},
+    {label:'Restore power', tag:'safe', tagt:'Steady reward', run:()=>{ const a=grantSec(480); return 'Lights back on. +'+a+' Valor from grateful citizens.'; }} ]},
+  {icon:'💼', title:'Anonymous Benefactor', flav:'A donor offers a fortune — for a quiet favor later.', opts:[
+    {label:'Accept the deal', tag:'risk', tagt:'Fortune now, debt later', run:()=>{ const a=grantSec(2700); addBuff('debt'); return 'Coffers overflowing (+'+a+') — but now you owe someone.'; }},
+    {label:'Politely decline', tag:'safe', tagt:'Small, no strings', run:()=>{ const a=grantSec(240); return 'You keep your independence. +'+a+' Valor.'; }} ]},
+  {icon:'🚨', title:'Prison Break', flav:'Inmates are pouring out of Blackgate Penitentiary.', opts:[
+    {label:'Lock it down', tag:'good', tagt:'Frenzy', run:()=>{ addBuff('frenzy'); return 'You round them up in a frenzy — ×7 production!'; }},
+    {label:'Guard the city', tag:'safe', tagt:'Reward + recharge', run:()=>{ for(const id in S.pow)S.pow[id]=0; const a=grantSec(360); return 'Order restored. +'+a+' Valor and abilities recharged.'; }} ]},
+  {icon:'🤝', title:'Rival Vigilante', flav:'Another masked hero offers to team up tonight.', opts:[
+    {label:'Join forces', tag:'good', tagt:'Overdrive', run:()=>{ addBuff('overdrive'); return 'An unstoppable duo — Overdrive engaged!'; }},
+    {label:'Work alone', tag:'safe', tagt:'Reward', run:()=>{ const a=grantSec(420); return 'You handle it solo. +'+a+' Valor.'; }} ]},
+  {icon:'💎', title:'Museum Gala', flav:'Thieves are eyeing the priceless gems at tonight\'s gala.', opts:[
+    {label:'Bait the thieves', tag:'risk', tagt:'Bigger haul, gets rough', run:()=>{ const a=grantSec(1500); addBuff('reckless'); return 'You net the whole ring (+'+a+') — but it got rough.'; }},
+    {label:'Guard the vault', tag:'safe', tagt:'Reliable reward', run:()=>{ const a=grantSec(540); return 'Not a single gem missing. +'+a+' Valor.'; }} ]},
+];
+function crisisMult(){ return hasFlag('sk_crisis')?1.5:1; }
+function grantSec(sec){ const a=Math.max(production()*sec, 50)*crisisMult(); gainValor(a); return fmt(a); }
+let crisisEl=null, crisisTimer=null;
+function spawnCrisis(){
+  if(modalOpen()||crisisEl){ S.crisisCD=12; return; }
+  const c=CRISES[Math.floor(Math.random()*CRISES.length)]; const layer=$('#evlayer'); if(!layer) return;
+  const bar=document.createElement('div'); bar.className='crisisbar';
+  bar.innerHTML=`<span class="cbi">${c.icon}</span><div class="cbmid"><div class="cbt">⚠ ${c.title}</div><div class="cbs">${c.flav}</div></div>`+
+    `<button class="cbresp">Respond</button><button class="cbx" aria-label="dismiss">✕</button>`;
+  layer.appendChild(bar); crisisEl=bar;
+  const close=()=>{ if(crisisTimer){ clearTimeout(crisisTimer); crisisTimer=null; } if(bar.parentNode) bar.remove(); crisisEl=null; };
+  bar.querySelector('.cbresp').addEventListener('click',()=>{ close(); openCrisis(c); });
+  bar.querySelector('.cbx').addEventListener('click', close);
+  crisisTimer=setTimeout(close, 30000);
+}
+function openCrisis(c){
+  const tagTxt={good:'Power-up',risk:'High risk',safe:'Safe'};
+  const opts=c.opts.map((o,i)=>`<button class="copt" data-i="${i}"><div class="col">${o.label}</div><div class="cod">${o.tagt||''}</div><span class="cotag ${o.tag}">${tagTxt[o.tag]||''}</span></button>`).join('');
+  modal(`<div class="mhead"><div class="me">${c.icon}</div><div class="mt red">${c.title}</div></div>`+
+    `<div class="mbody"><p style="text-align:center">${c.flav}</p>${opts}</div>`+
+    `<div class="mfoot"><button class="btn" onclick="closeModal()">Ignore for now</button></div>`);
+  $$('.copt').forEach(b=>b.addEventListener('click',()=>{
+    const o=c.opts[parseInt(b.dataset.i,10)]; const msg=o.run();
+    S.crises=(S.crises||0)+1; checkAch(); save(); closeModal();
+    toast('Resolved: '+c.title, msg, 'win', c.icon);
+  }));
+}
+function renderBuffs(){
+  const bar=el.buffbar||$('#buffbar'); if(!bar) return;
+  const t=now(); const keys=Object.keys(S.buffs).filter(k=>S.buffs[k]>t && BUFFS[k]);
+  if(keys.length===0){ if(bar.childElementCount){ bar.innerHTML=''; } bar._sig=''; return; }
+  const sig=keys.join(',');
+  if(bar._sig!==sig){ bar._sig=sig; bar.innerHTML=keys.map(k=>{ const b=BUFFS[k]; return `<div class="buffchip ${b.bad?'bad':''}" style="color:${b.color}"><span class="bi">${b.icon}</span><span>${b.name}</span><span class="bt" data-bt="${k}"></span></div>`; }).join(''); }
+  keys.forEach(k=>{ const c=bar.querySelector(`[data-bt="${k}"]`); if(c) c.textContent=Math.ceil((S.buffs[k]-t)/1000)+'s'; });
+}
+
 /* ---------------- appearance ---------------- */
 function applyAppearance(){
   document.documentElement.style.setProperty('--suit', suitColor());
@@ -1525,6 +1696,9 @@ function loop(){
   }
   if(S.threat){ if(prod>0) damageThreat(prod*dt,false); }
   else { S.threatCD-=dt; if(S.threatCD<=0){ spawnThreat(); if(!S.threat) S.threatCD=8; } }
+  pruneBuffs();
+  if(S.lifetime>=150){ S.surgeCD-=dt; if(S.surgeCD<=0){ S.surgeCD=rrand(115,165); spawnSurge(); } }
+  if(S.lifetime>=800){ S.crisisCD-=dt; if(S.crisisCD<=0){ S.crisisCD=rrand(240,360); spawnCrisis(); } }
   if(hasFlag('sk_autoteam')){ autoBuyTimer-=dt; if(autoBuyTimer<=0){ autoBuyTimer=2.5; autoBuyCheapest(); } }
   if(hasFlag('sk_autopow')) autoCastPowers();
   chkTimer-=dt; if(chkTimer<=0){ chkTimer=1; checkUnlocks(); checkAch(); }
@@ -1592,6 +1766,7 @@ function openSettings(){
         `<div class="seclbl-c">Suit</div><div class="swrow" id="apSuit">${OUTFITS.map((o,i)=>`<button class="suit${i===S.outfit?' sel':''}" data-i="${i}" title="${o.name}"><i style="background:${o.color}"></i></button>`).join('')}</div>`+
         `</div>`+
       `<div class="setrow"><div><div class="sk">Reduce effects</div><div class="sv">Fewer animations & screen bursts</div></div><div class="toggle ${S.reduceFx?'on':''}" id="tgFx"><i></i></div></div>`+
+      `<div class="setrow"><div><div class="sk">Auto-collect alerts</div><div class="sv">Power Surges grab themselves — fully hands-free</div></div><div class="toggle ${S.autoSurge?'on':''}" id="tgSurge"><i></i></div></div>`+
       `<div class="setrow" style="display:block"><div class="sk" style="margin-bottom:6px">Backup / transfer save</div>`+
         `<textarea class="imparea" id="saveBox" spellcheck="false">${saveStr}</textarea>`+
         `<div style="display:flex;gap:8px;margin-top:8px"><button class="minibtn" id="btnCopy">📋 Copy</button><button class="minibtn" id="btnImport">📥 Load from box</button></div>`+
@@ -1601,6 +1776,7 @@ function openSettings(){
     `</div>`+
     `<div class="mfoot"><button class="btn primary" onclick="closeModal()">Done</button></div>`);
   const fx=$('#tgFx'); if(fx) fx.addEventListener('click',function(){ S.reduceFx=!S.reduceFx; this.classList.toggle('on',S.reduceFx); save(); });
+  const su=$('#tgSurge'); if(su) su.addEventListener('click',function(){ S.autoSurge=!S.autoSurge; this.classList.toggle('on',S.autoSurge); save(); });
   const apPrev=$('#apPrev'); const apDraw=()=>{ if(apPrev) apPrev.innerHTML=heroSVG(heroOpts()); };
   const apPick=(sel,b)=>{ $$(sel).forEach(x=>x.classList.toggle('sel',x===b)); };
   apDraw();
