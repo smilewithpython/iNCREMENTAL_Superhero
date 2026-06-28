@@ -320,13 +320,34 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   font-family:monospace;font-size:10px;padding:8px;resize:none}
 
 /* achievements grid */
-.achgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:2px 0}
-.ach{aspect-ratio:1;border-radius:12px;display:grid;place-items:center;text-align:center;gap:2px;
-  background:var(--surface2);border:1px solid var(--line2);opacity:.4;filter:grayscale(1);position:relative}
+.achgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:2px 0 2px}
+.ach{border-radius:12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;padding:9px 5px;
+  background:var(--surface2);border:1px solid var(--line2);opacity:.5;filter:grayscale(.7);position:relative;min-height:72px}
 .ach.got{opacity:1;filter:none;border-color:var(--gold);background:linear-gradient(180deg,rgba(255,200,61,.1),var(--surface2))}
-.ach .ae{font-size:23px}
-.ach .an{font-size:8px;font-weight:700;color:var(--muted);padding:0 3px;line-height:1.1}
+.ach .ae{font-size:24px;line-height:1}
+.ach .an{font-size:8.5px;font-weight:700;color:var(--muted);padding:0 2px;line-height:1.12}
 .ach.got .an{color:var(--text)}
+.achcat{font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim);margin:14px 2px 6px;display:flex;justify-content:space-between;align-items:center}
+.achcat span{color:var(--muted)}
+.aprog{width:88%;height:4px;border-radius:3px;background:#1b2640;margin-top:2px;overflow:hidden}
+.aprog i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--aqua))}
+.apt{font-size:8px;color:var(--dim);font-variant-numeric:tabular-nums}
+.hicon{position:relative}
+.hicon.badge::after{content:'';position:absolute;top:3px;right:3px;width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:0 0 7px var(--red);border:1.5px solid #0a0e1a;animation:badgePulse 1.4s ease-in-out infinite}
+@keyframes badgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+.contract{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:11px;margin-top:9px}
+.contract.done{border-color:var(--aqua);box-shadow:0 0 0 1px rgba(70,229,183,.25)}
+.contract .cic{font-size:26px;flex-shrink:0}
+.contract .cmid{flex:1;min-width:0}
+.contract .cdesc{font-weight:700;font-size:13px}
+.contract .cprog{height:5px;border-radius:3px;background:#1b2640;margin-top:7px;overflow:hidden}
+.contract .cprog i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--aqua));transition:width .3s}
+.contract.done .cprog i{background:linear-gradient(90deg,var(--aqua),#7cffc4)}
+.contract .cmeta{font-size:11px;color:var(--muted);margin-top:5px;display:flex;justify-content:space-between;gap:8px;font-variant-numeric:tabular-nums}
+.contract .crew{color:var(--gold);font-weight:700}
+.cbtn{flex-shrink:0;background:var(--aqua);color:#08231c;border:none;border-radius:10px;padding:9px 14px;font-weight:800;font-size:12.5px;transition:transform .1s}
+.cbtn:active{transform:scale(.95)}
+.cbtn:disabled{background:#1b2640;color:#5e6f93}
 
 .scrollpad{height:8px}
 @media (max-width:340px){ .valor{font-size:27px} .med{width:164px;height:164px} .med .em{width:106px} .medwrap{width:210px;height:210px} }
@@ -537,6 +558,7 @@ button{font-family:inherit;color:inherit;border:none;background:none;cursor:poin
   </div>
 
   <header id="hud">
+    <button class="hicon" id="btnContracts" aria-label="Contracts">📋</button>
     <button class="hicon" id="btnAch" aria-label="Achievements">🏆</button>
     <div class="hud-main">
       <div class="rankrow">
@@ -819,39 +841,71 @@ const SKILLS=[
   {id:'sk_crisis', emoji:'🎖️', name:'Crisis Command',   cost:4,  type:'flag',      desc:'+50% Valor from City Crisis rewards.'},
 ];
 
+const ACH_CATS=[['combat','Combat'],['wealth','Wealth'],['team','Team'],['villains','Villains'],['events','Events'],['legacy','Legacy']];
 const ACH=[
-  {id:'a_tap1',   emoji:'👊', name:'First Punch',   cond:s=>s.clicks>=1},
-  {id:'a_tap100', emoji:'💪', name:'Brawler',       cond:s=>s.clicks>=100},
-  {id:'a_tap1k',  emoji:'🥊', name:'Knuckles',      cond:s=>s.clicks>=1000},
-  {id:'a_team5',  emoji:'🧑‍🤝‍🧑', name:'Squad',     cond:s=>teamSize()>=5},
-  {id:'a_team25', emoji:'👥', name:'Task Force',    cond:s=>teamSize()>=25},
-  {id:'a_team100',emoji:'🏟️', name:'An Army',       cond:s=>teamSize()>=100},
-  {id:'a_patrol50',emoji:'👟',name:'Beat Cop',      cond:s=>(s.gens.patrol||0)>=50},
-  {id:'a_v1k',    emoji:'🪙', name:'Pocket Change', cond:s=>s.lifetime>=1e3},
-  {id:'a_v1m',    emoji:'💵', name:'Millionaire',   cond:s=>s.lifetime>=1e6},
-  {id:'a_v1b',    emoji:'💎', name:'Billionaire',   cond:s=>s.lifetime>=1e9},
-  {id:'a_v1t',    emoji:'🏆', name:'Trillionaire',  cond:s=>s.lifetime>=1e12},
-  {id:'a_boss1',  emoji:'⚔️', name:'First Blood',   cond:s=>s.villains>=1},
-  {id:'a_boss3',  emoji:'🛡️', name:'Crime Fighter', cond:s=>s.villains>=3},
-  {id:'a_bossall',emoji:'🌟', name:'City Savior',   cond:s=>s.storyIndex>=BOSSES.length},
-  {id:'a_pow1',   emoji:'⚡', name:'Empowered',     cond:s=>s._usedPower},
-  {id:'a_rankC',  emoji:'🏅', name:'Champion',      cond:s=>rankIdx()>=4},
-  {id:'a_rankL',  emoji:'👑', name:'Living Legend', cond:s=>rankIdx()>=7},
-  {id:'a_pres1',  emoji:'♻️', name:'New Generation',cond:s=>s.prestiges>=1},
-  {id:'a_pres5',  emoji:'🔄', name:'Mentor',        cond:s=>s.prestiges>=5},
-  {id:'a_pres25', emoji:'🌀', name:'Eternal',       cond:s=>s.prestiges>=25},
-  {id:'a_legend10',emoji:'⭐',name:'Storied',       cond:s=>s.legend>=10},
-  {id:'a_legend100',emoji:'✨',name:'Mythmaker',    cond:s=>s.legend>=100},
-  {id:'a_allglobal',emoji:'🎆',name:'Full Support', cond:s=>UPGRADES.filter(u=>u.type==='global').every(u=>s.ups[u.id])},
-  {id:'a_skill5', emoji:'🧠', name:'Master',        cond:s=>SKILLS.filter(k=>s.ups[k.id]).length>=5},
-  {id:'a_surge1', emoji:'⚡', name:'Quick Hands',   cond:s=>(s.surges||0)>=1},
-  {id:'a_surge25',emoji:'🌟', name:'First Responder',cond:s=>(s.surges||0)>=25},
-  {id:'a_overdrive',emoji:'🔴',name:'Redline',      cond:s=>s._overdrive},
-  {id:'a_crisis1',emoji:'🚨', name:'On the Scene',  cond:s=>(s.crises||0)>=1},
-  {id:'a_crisis15',emoji:'🎖️',name:'Crisis Veteran',cond:s=>(s.crises||0)>=15},
-  {id:'a_cache1', emoji:'🎁', name:'Lucky Find',    cond:s=>(s.caches||0)>=1},
-  {id:'a_cache15',emoji:'🎰', name:'Treasure Hunter',cond:s=>(s.caches||0)>=15},
-  {id:'a_rankmax',emoji:'🌌', name:'Cosmic Guardian',cond:s=>rankIdx()>=RANKS.length-1},
+  // ----- COMBAT (taps) -----
+  {id:'a_tap1',   cat:'combat', emoji:'👊', name:'First Punch',   cond:s=>s.clicks>=1},
+  {id:'a_tap100', cat:'combat', emoji:'💪', name:'Brawler',       cond:s=>s.clicks>=100,   prog:s=>({cur:s.clicks,goal:100})},
+  {id:'a_tap1k',  cat:'combat', emoji:'🥊', name:'Knuckles',      cond:s=>s.clicks>=1e3,   prog:s=>({cur:s.clicks,goal:1e3})},
+  {id:'a_tap10k', cat:'combat', emoji:'🦾', name:'Bruiser',       cond:s=>s.clicks>=1e4,   prog:s=>({cur:s.clicks,goal:1e4})},
+  {id:'a_tap100k',cat:'combat', emoji:'💥', name:'Powerhouse',    cond:s=>s.clicks>=1e5,   prog:s=>({cur:s.clicks,goal:1e5})},
+  {id:'a_tap1m',  cat:'combat', emoji:'☄️', name:'Onslaught',     cond:s=>s.clicks>=1e6,   prog:s=>({cur:s.clicks,goal:1e6})},
+  // ----- WEALTH (lifetime Valor) -----
+  {id:'a_v1k',    cat:'wealth', emoji:'🪙', name:'Pocket Change', cond:s=>s.lifetime>=1e3, prog:s=>({cur:s.lifetime,goal:1e3})},
+  {id:'a_v1m',    cat:'wealth', emoji:'💵', name:'Millionaire',   cond:s=>s.lifetime>=1e6, prog:s=>({cur:s.lifetime,goal:1e6})},
+  {id:'a_v1b',    cat:'wealth', emoji:'💎', name:'Billionaire',   cond:s=>s.lifetime>=1e9, prog:s=>({cur:s.lifetime,goal:1e9})},
+  {id:'a_v1t',    cat:'wealth', emoji:'🏦', name:'Trillionaire',  cond:s=>s.lifetime>=1e12,prog:s=>({cur:s.lifetime,goal:1e12})},
+  {id:'a_v1q',    cat:'wealth', emoji:'🏆', name:'Quadrillionaire',cond:s=>s.lifetime>=1e15,prog:s=>({cur:s.lifetime,goal:1e15})},
+  {id:'a_v1Q',    cat:'wealth', emoji:'👑', name:'Quintillionaire',cond:s=>s.lifetime>=1e18,prog:s=>({cur:s.lifetime,goal:1e18})},
+  {id:'a_allglobal',cat:'wealth',emoji:'🎆',name:'Full Support',  cond:s=>UPGRADES.filter(u=>u.type==='global').every(u=>s.ups[u.id])},
+  // ----- TEAM -----
+  {id:'a_team5',  cat:'team', emoji:'🧑‍🤝‍🧑', name:'Squad',      cond:s=>teamSize()>=5,    prog:s=>({cur:teamSize(),goal:5})},
+  {id:'a_team25', cat:'team', emoji:'👥', name:'Task Force',     cond:s=>teamSize()>=25,   prog:s=>({cur:teamSize(),goal:25})},
+  {id:'a_team100',cat:'team', emoji:'🏟️', name:'An Army',        cond:s=>teamSize()>=100,  prog:s=>({cur:teamSize(),goal:100})},
+  {id:'a_team250',cat:'team', emoji:'🛡️', name:'Legion',         cond:s=>teamSize()>=250,  prog:s=>({cur:teamSize(),goal:250})},
+  {id:'a_team500',cat:'team', emoji:'⚔️', name:'Battalion',      cond:s=>teamSize()>=500,  prog:s=>({cur:teamSize(),goal:500})},
+  {id:'a_patrol50',cat:'team',emoji:'👟', name:'Beat Cop',       cond:s=>(s.gens.patrol||0)>=50, prog:s=>({cur:s.gens.patrol||0,goal:50})},
+  // ----- VILLAINS -----
+  {id:'a_boss1',  cat:'villains', emoji:'⚔️', name:'First Blood',  cond:s=>s.villains>=1},
+  {id:'a_boss3',  cat:'villains', emoji:'🛡️', name:'Crime Fighter',cond:s=>s.villains>=3,  prog:s=>({cur:s.villains,goal:3})},
+  {id:'a_vil10',  cat:'villains', emoji:'🚓', name:'Crime Stopper',cond:s=>s.villains>=10, prog:s=>({cur:s.villains,goal:10})},
+  {id:'a_vil50',  cat:'villains', emoji:'🚔', name:'Peacekeeper',  cond:s=>s.villains>=50, prog:s=>({cur:s.villains,goal:50})},
+  {id:'a_vil200', cat:'villains', emoji:'🏅', name:'Untouchable',  cond:s=>s.villains>=200,prog:s=>({cur:s.villains,goal:200})},
+  {id:'a_bossall',cat:'villains', emoji:'🌟', name:'City Savior',  cond:s=>s.storyIndex>=BOSSES.length, prog:s=>({cur:s.storyIndex,goal:BOSSES.length})},
+  // ----- EVENTS -----
+  {id:'a_pow1',   cat:'events', emoji:'⚡', name:'Empowered',     cond:s=>s._usedPower},
+  {id:'a_surge1', cat:'events', emoji:'✨', name:'Quick Hands',   cond:s=>(s.surges||0)>=1},
+  {id:'a_surge25',cat:'events', emoji:'🌟', name:'First Responder',cond:s=>(s.surges||0)>=25, prog:s=>({cur:s.surges||0,goal:25})},
+  {id:'a_surge100',cat:'events',emoji:'⚡', name:'Surge Master',  cond:s=>(s.surges||0)>=100,prog:s=>({cur:s.surges||0,goal:100})},
+  {id:'a_overdrive',cat:'events',emoji:'🔴',name:'Redline',       cond:s=>s._overdrive},
+  {id:'a_crisis1',cat:'events', emoji:'🚨', name:'On the Scene',  cond:s=>(s.crises||0)>=1},
+  {id:'a_crisis15',cat:'events',emoji:'🎖️',name:'Crisis Veteran',cond:s=>(s.crises||0)>=15, prog:s=>({cur:s.crises||0,goal:15})},
+  {id:'a_crisis50',cat:'events',emoji:'🏵️',name:'City Guardian',  cond:s=>(s.crises||0)>=50, prog:s=>({cur:s.crises||0,goal:50})},
+  {id:'a_cache1', cat:'events', emoji:'🎁', name:'Lucky Find',    cond:s=>(s.caches||0)>=1},
+  {id:'a_cache15',cat:'events', emoji:'🎰', name:'Treasure Hunter',cond:s=>(s.caches||0)>=15,prog:s=>({cur:s.caches||0,goal:15})},
+  {id:'a_cache50',cat:'events', emoji:'💰', name:'Jackpot Junkie',cond:s=>(s.caches||0)>=50, prog:s=>({cur:s.caches||0,goal:50})},
+  {id:'a_contract1',cat:'events',emoji:'📋',name:'Working Hero',  cond:s=>(s.contractsDone||0)>=1},
+  {id:'a_contract10',cat:'events',emoji:'🗂️',name:'Taskmaster',  cond:s=>(s.contractsDone||0)>=10,prog:s=>({cur:s.contractsDone||0,goal:10})},
+  {id:'a_contract50',cat:'events',emoji:'🏆',name:'Workhorse',    cond:s=>(s.contractsDone||0)>=50,prog:s=>({cur:s.contractsDone||0,goal:50})},
+  // ----- LEGACY (prestige / legend / mastery / rank) -----
+  {id:'a_pres1',  cat:'legacy', emoji:'♻️', name:'New Generation',cond:s=>s.prestiges>=1},
+  {id:'a_pres3',  cat:'legacy', emoji:'🔁', name:'Comeback',      cond:s=>s.prestiges>=3,  prog:s=>({cur:s.prestiges,goal:3})},
+  {id:'a_pres5',  cat:'legacy', emoji:'🔄', name:'Mentor',        cond:s=>s.prestiges>=5,  prog:s=>({cur:s.prestiges,goal:5})},
+  {id:'a_pres10', cat:'legacy', emoji:'🌀', name:'Reincarnated',  cond:s=>s.prestiges>=10, prog:s=>({cur:s.prestiges,goal:10})},
+  {id:'a_pres25', cat:'legacy', emoji:'💫', name:'Eternal',       cond:s=>s.prestiges>=25, prog:s=>({cur:s.prestiges,goal:25})},
+  {id:'a_pres50', cat:'legacy', emoji:'🌠', name:'Immortal',      cond:s=>s.prestiges>=50, prog:s=>({cur:s.prestiges,goal:50})},
+  {id:'a_pres100',cat:'legacy', emoji:'♾️', name:'Timeless',      cond:s=>s.prestiges>=100,prog:s=>({cur:s.prestiges,goal:100})},
+  {id:'a_legend10',cat:'legacy',emoji:'⭐', name:'Storied',       cond:s=>s.legend>=10,    prog:s=>({cur:s.legend,goal:10})},
+  {id:'a_legend100',cat:'legacy',emoji:'✨',name:'Mythmaker',     cond:s=>s.legend>=100,   prog:s=>({cur:s.legend,goal:100})},
+  {id:'a_legend1k',cat:'legacy',emoji:'🌟', name:'Legendary',     cond:s=>s.legend>=1e3,   prog:s=>({cur:s.legend,goal:1e3})},
+  {id:'a_legend10k',cat:'legacy',emoji:'💠',name:'Transcendent',  cond:s=>s.legend>=1e4,   prog:s=>({cur:s.legend,goal:1e4})},
+  {id:'a_skill1', cat:'legacy', emoji:'🧩', name:'Awakened',      cond:s=>SKILLS.filter(k=>s.ups[k.id]).length>=1},
+  {id:'a_skill5', cat:'legacy', emoji:'🧠', name:'Master',        cond:s=>SKILLS.filter(k=>s.ups[k.id]).length>=5, prog:s=>({cur:SKILLS.filter(k=>s.ups[k.id]).length,goal:5})},
+  {id:'a_skill8', cat:'legacy', emoji:'🎓', name:'Grandmaster',   cond:s=>SKILLS.filter(k=>s.ups[k.id]).length>=8, prog:s=>({cur:SKILLS.filter(k=>s.ups[k.id]).length,goal:8})},
+  {id:'a_skillall',cat:'legacy',emoji:'🌈', name:'Enlightened',   cond:s=>SKILLS.every(k=>s.ups[k.id]), prog:s=>({cur:SKILLS.filter(k=>s.ups[k.id]).length,goal:SKILLS.length})},
+  {id:'a_rankC',  cat:'legacy', emoji:'🏅', name:'Champion',      cond:s=>rankIdx()>=4},
+  {id:'a_rankL',  cat:'legacy', emoji:'👑', name:'Living Legend', cond:s=>rankIdx()>=7},
+  {id:'a_rankmax',cat:'legacy', emoji:'🌌', name:'Cosmic Guardian',cond:s=>rankIdx()>=RANKS.length-1},
 ];
 
 const CRIMES=['Mugging','Carjacking','Bank alarm','Purse snatch','Arson attempt','Hostage scare','Jewel heist',
@@ -873,6 +927,7 @@ function defaultState(){
     ach:{}, origin:null, name:'', buyAmt:1,
     autoTap:false, sex:null, outfit:0, skin:'#d99a6c', hairColor:'#4a3526', hairStyle:'short',
     buffs:{}, surgeCD:80, crisisCD:200, autoSurge:false, surges:0, crises:0, caches:0, cacheCD:300,
+    contracts:[], contractsDone:0,
     muted:false, reduceFx:false,
     t:now(), created:now(),
     _usedPower:false, _seenTabs:{},
@@ -892,7 +947,7 @@ function load(){
   const d=rawLoad();
   S=defaultState();
   if(d && typeof d==='object'){ Object.assign(S, d);
-    S.gens=d.gens||{}; S.ups=d.ups||{}; S.pow=d.pow||{}; S.powActive=d.powActive||{}; S.ach=d.ach||{}; S._seenTabs=d._seenTabs||{}; S.buffs=d.buffs||{};
+    S.gens=d.gens||{}; S.ups=d.ups||{}; S.pow=d.pow||{}; S.powActive=d.powActive||{}; S.ach=d.ach||{}; S._seenTabs=d._seenTabs||{}; S.buffs=d.buffs||{}; S.contracts=Array.isArray(d.contracts)?d.contracts:[];
   }
   return !!d;
 }
@@ -1010,7 +1065,7 @@ function cacheEls(){
   el.teamList=$('#teamList'); el.teamSub=$('#teamSub'); el.abilWrap=$('#abilWrap'); el.upgList=$('#upgList');
   el.threatBody=$('#threatBody'); el.threatSub=$('#threatSub'); el.legacyBody=$('#legacyBody'); el.cityThreat=$('#cityThreat');
   el.autobar=$('#autobar'); el.autoTog=$('#autoTog'); el.autoSub=$('#autoSub'); el.netBody=$('#netBody');
-  el.buffbar=$('#buffbar'); el.evlayer=$('#evlayer');
+  el.buffbar=$('#buffbar'); el.evlayer=$('#evlayer'); el.btnContracts=$('#btnContracts');
 }
 
 /* HUD + city stats — cheap, runs every frame */
@@ -1035,6 +1090,7 @@ function renderHUD(){
     ? ('Active · '+autoRate().toFixed(autoRate()<10?1:0)+'/sec · +'+fmt(clickPower()*autoPowMult())+'/tap')
     : 'Hands-free tapping — easy on your hands';
   renderBuffs();
+  if(el.btnContracts) el.btnContracts.classList.toggle('badge', contractClaimable());
 }
 
 /* generic: build a signature so we only rebuild list DOM when structure changes */
@@ -1722,6 +1778,67 @@ function checkRankUp(){
   if(idx>lastRankShown){ lastRankShown=idx; celebrateRank(RANKS[idx]); }
 }
 
+/* ---------------- contracts ---------------- */
+function rint(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+const CSTAT={ villains:s=>s.villains, team:()=>teamSize(), clicks:s=>s.clicks, surges:s=>s.surges||0, caches:s=>s.caches||0, earned:s=>s.earned };
+const CTPL=[
+  {tid:'crimes', stat:'villains', icon:'🚓', goal:()=>rint(3,8),   text:g=>`Foil ${g} crimes`,                  rew:'valor'},
+  {tid:'recruit',stat:'team',     icon:'🧑‍🤝‍🧑', goal:()=>rint(12,30), text:g=>`Recruit ${g} more allies`,        rew:'valor'},
+  {tid:'taps',   stat:'clicks',   icon:'👊', goal:()=>rint(60,160), text:g=>`Land ${g} punches`,                 rew:'buff'},
+  {tid:'surges', stat:'surges',   icon:'⚡', goal:()=>rint(2,5),    text:g=>`Catch ${g} Power Surges`,            rew:'legend'},
+  {tid:'cache',  stat:'caches',   icon:'🎁', goal:()=>rint(1,3),    text:g=>`Open ${g} Mystery Cache${g>1?'s':''}`, rew:'valor'},
+  {tid:'earn',   stat:'earned',   icon:'💰', goal:()=>Math.max(production()*rint(400,1000),500), text:g=>`Earn ${fmt(g)} Valor`, rew:'valorbig'},
+];
+const CTMAP={}; CTPL.forEach(t=>CTMAP[t.tid]=t);
+function makeContract(avoid){
+  let pool=CTPL.filter(t=>!avoid||avoid.indexOf(t.tid)<0); if(!pool.length) pool=CTPL;
+  const t=pool[Math.floor(Math.random()*pool.length)];
+  return {tid:t.tid, stat:t.stat, base:CSTAT[t.stat](S), goal:t.goal(), rew:t.rew};
+}
+function ensureContracts(){
+  if(!Array.isArray(S.contracts)) S.contracts=[];
+  let guard=0;
+  while(S.contracts.length<3 && guard++<10){ S.contracts.push(makeContract(S.contracts.map(c=>c.tid))); }
+}
+function contractProg(c){ const cur=Math.max(0, CSTAT[c.stat](S)-c.base); return {cur, goal:c.goal, done:cur>=c.goal}; }
+function contractClaimable(){ ensureContracts(); return S.contracts.some(c=>contractProg(c).done); }
+function claimContract(i){
+  const c=S.contracts[i]; if(!c || !contractProg(c).done) return;
+  let msg='';
+  if(c.rew==='valor'){ const a=Math.max(production()*rint(600,1500),200); gainValor(a); msg='+'+fmt(a)+' Valor'; }
+  else if(c.rew==='valorbig'){ const a=Math.max(production()*rint(1800,3600),1000); gainValor(a); msg='+'+fmt(a)+' Valor'; }
+  else if(c.rew==='legend'){ S.legend+=1; legacySig=''; msg='+1 Legend ⭐'; }
+  else if(c.rew==='buff'){ const ks=['frenzy','tapstorm','fame']; const k=ks[Math.floor(Math.random()*ks.length)]; addBuff(k); msg=BUFFS[k].name+' buff'; }
+  S.contractsDone=(S.contractsDone||0)+1;
+  S.contracts[i]=makeContract(S.contracts.map(x=>x.tid));
+  checkAch(); save();
+  toast('Contract complete!', msg, 'win', '📋');
+  renderContractsModal();
+}
+function openContracts(){
+  ensureContracts();
+  modal(`<div class="mhead"><div class="me">📋</div><div class="mt blue">Contracts</div></div>`+
+    `<div class="mbody"><p style="text-align:center;color:var(--muted);margin-bottom:4px">Take on jobs for bonus rewards. A fresh contract appears each time you finish one.</p>`+
+    `<div id="contractList"></div>`+
+    `<p style="text-align:center;color:var(--dim);font-size:11px;margin-top:10px">Completed: ${S.contractsDone||0}</p></div>`+
+    `<div class="mfoot"><button class="btn primary" onclick="closeModal()">Close</button></div>`);
+  renderContractsModal();
+}
+function renderContractsModal(){
+  const host=$('#contractList'); if(!host) return; ensureContracts();
+  host.innerHTML=S.contracts.map((c,i)=>{ const p=contractProg(c); const t=CTMAP[c.tid]||CTPL[0];
+    const goalTxt=c.tid==='earn'?fmt(c.goal):c.goal;
+    const curTxt=c.tid==='earn'?fmt(Math.min(p.cur,c.goal)):Math.min(p.cur,c.goal);
+    const rew=c.rew==='legend'?'⭐ +1 Legend':c.rew==='buff'?'🎲 Random buff':c.rew==='valorbig'?'💰 Big Valor':'💰 Valor';
+    return `<div class="contract ${p.done?'done':''}"><div class="cic">${t.icon}</div>`+
+      `<div class="cmid"><div class="cdesc">${t.text(goalTxt)}</div>`+
+      `<div class="cprog"><i style="width:${clamp(100*p.cur/c.goal,0,100)}%"></i></div>`+
+      `<div class="cmeta">${curTxt} / ${goalTxt}<span class="crew">${rew}</span></div></div>`+
+      `<button class="cbtn" data-i="${i}" ${p.done?'':'disabled'}>${p.done?'Claim':'…'}</button></div>`;
+  }).join('');
+  $$('#contractList .cbtn').forEach(b=>b.addEventListener('click',()=>{ if(!b.disabled) claimContract(parseInt(b.dataset.i,10)); }));
+}
+
 /* ---------------- appearance ---------------- */
 function applyAppearance(){
   document.documentElement.style.setProperty('--suit', suitColor());
@@ -1920,10 +2037,22 @@ function switchTab(tab){
 
 /* ---------------- achievements / settings modals ---------------- */
 function openAch(){
-  let cells='';
-  for(const a of ACH){ const got=S.ach[a.id]; cells+=`<div class="ach ${got?'got':''}"><div class="ae">${got?a.emoji:'❔'}</div><div class="an">${got?a.name:'???'}</div></div>`; }
+  let body='';
+  for(const [ck,cl] of ACH_CATS){
+    const list=ACH.filter(a=>a.cat===ck); if(!list.length) continue;
+    const got=list.filter(a=>S.ach[a.id]).length;
+    body+=`<div class="achcat">${cl}<span>${got}/${list.length}</span></div><div class="achgrid">`;
+    for(const a of list){
+      const done=S.ach[a.id];
+      let pbar='';
+      if(!done && a.prog){ const p=a.prog(S); const pct=clamp(100*p.cur/p.goal,0,100);
+        pbar=`<div class="aprog"><i style="width:${pct}%"></i></div><div class="apt">${fmt(Math.min(p.cur,p.goal))}/${fmt(p.goal)}</div>`; }
+      body+=`<div class="ach ${done?'got':''}"><div class="ae">${a.emoji}</div><div class="an">${a.name}</div>${pbar}</div>`;
+    }
+    body+='</div>';
+  }
   modal(`<div class="mhead"><div class="me">🏆</div><div class="mt gold">Achievements</div></div>`+
-    `<div class="mbody"><p style="text-align:center;margin-bottom:12px">${achCount()} / ${ACH.length} unlocked · each grants <b>+1% production</b></p><div class="achgrid">${cells}</div></div>`+
+    `<div class="mbody"><p style="text-align:center;margin-bottom:6px">${achCount()} / ${ACH.length} unlocked · each grants <b>+1% production</b> <span style="color:var(--aqua)">(+${achCount()}% total)</span></p>${body}</div>`+
     `<div class="mfoot"><button class="btn primary" onclick="closeModal()">Close</button></div>`);
 }
 function openSettings(){
@@ -2069,6 +2198,7 @@ function init(){
   }));
   // header
   $('#btnAch').addEventListener('click',openAch);
+  $('#btnContracts').addEventListener('click',openContracts);
   $('#btnSet').addEventListener('click',openSettings);
   // medallion tap + auto-patrol toggle
   const med=$('#med');

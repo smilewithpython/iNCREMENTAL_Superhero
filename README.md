@@ -100,6 +100,13 @@ This was built to be safe to close at any time:
   overhead, windows flicker, and your hero breathes and blinks on the medallion. Hit a new
   **Rank** and you'll get a confetti celebration. (All of this respects **Reduce effects**
   and your device's reduced-motion setting.)
-- The 🏆 button tracks **achievements** (each adds +1% production forever).
+- **Contracts** 📋 (top-left button) — a rotating board of jobs like "foil 5 crimes,"
+  "catch 3 Power Surges," or "earn X Valor." Each shows a live progress bar; finish one
+  and **Claim** it for a reward (Valor, a buff, or even **Legend**), and a fresh contract
+  takes its place. A red dot on the button means something's ready to claim.
+- The 🏆 button tracks **achievements** — 57 of them across six categories (Combat,
+  Wealth, Team, Villains, Events, Legacy), each shown with a **progress bar** toward the
+  next tier so you always know what you're chasing. Every one grants **+1% production
+  forever**, so completion is its own reward.
 
 Have fun, and go become a legend. ✊
